@@ -46,21 +46,7 @@ updates:
       - "deps"
       - "ci"
 
-  # Imágenes Docker del compose
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    commit-message:
-      prefix: "build(deps)"
-    labels:
-      - "deps"
-      - "infra"
-    ignore:
-      # PostgreSQL, PostGIS y Redis se actualizan con ventana de mantenimiento
-      # y migración probada (docs/runbooks/actualizacion.md).
-      - dependency-name: "postgis/postgis"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "redis"
-        update-types: ["version-update:semver-major"]
+  # Imágenes Docker: NO se actualizan automáticamente.
+  # Un cambio de PostgreSQL, PostGIS, Redis, MinIO o ChirpStack exige
+  # ventana de mantenimiento, migración probada y rollback documentado
+  # (docs/runbooks/actualizacion.md). Se gestionan a mano con un ADR.

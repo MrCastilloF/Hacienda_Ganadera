@@ -1,0 +1,41 @@
+%% Componentes internos del backend (C4 nivel 3) — docs/02-arquitectura.md §4
+graph TB
+    subgraph api["apps/api (NestJS)"]
+        direction TB
+        GW["API Gateway / Guards<br/>JWT, RBAC, rate limit"]
+        subgraph modulos["Módulos de dominio"]
+            AUTH["auth"]
+            ANI["animales"]
+            PES["pesajes"]
+            SAL["salud"]
+            REP["reproduccion"]
+            ALI["alimentacion"]
+            POT["potreros"]
+            INV["inventario"]
+            COM["compras / ventas"]
+            FIN["finanzas"]
+            IOT["iot (tags, gateways, perfiles)"]
+            GEO["geoespacial (mapas, geocercas)"]
+            DOC["documentos"]
+            ALE["alertas"]
+            RPT["reportes"]
+            SYNC["synchronization"]
+            AUD["auditoria"]
+            USR["usuarios / permisos"]
+        end
+        subgraph plataforma["Plataforma transversal"]
+            EVT["Event bus<br/>(eventos de dominio)"]
+            OUT["Outbox publisher"]
+            JOBS["Cola de trabajos"]
+            CACHE["Caché"]
+            OBS["Observabilidad / métricas"]
+            ERR["Filtro global de errores"]
+        end
+    end
+
+    GW --> modulos
+    modulos --> EVT
+    EVT --> OUT
+    OUT --> JOBS
+    modulos --> REPO["Repositorios<br/>(Prisma + SQL)"]
+    REPO --> DB[("PostgreSQL/PostGIS")]

@@ -1,0 +1,31 @@
+%% Diagrama de contexto (C4 nivel 1) — docs/02-arquitectura.md §2
+graph TB
+    subgraph actores["Actores"]
+        OP["Operario / Báscula"]
+        VET["Veterinario"]
+        ADM["Administrador de hacienda"]
+        MAY["Mayordomo"]
+        CON["Contador"]
+    end
+
+    SYS["<b>Plataforma Hacienda Ganadera</b><br/>ERP + trazabilidad + IoT + offline"]
+
+    subgraph ext["Sistemas externos"]
+        LNS["Servidor LoRaWAN<br/>(ChirpStack / TTS)"]
+        OSM["Teselas OSM"]
+        SMTP["Correo SMTP"]
+        CONT["Contabilidad externa"]
+        HW["Básculas y lectores"]
+    end
+
+    OP -->|"escanea, pesa, confirma"| SYS
+    VET -->|"historia clínica"| SYS
+    ADM -->|"configura, aprueba"| SYS
+    MAY -->|"potreros, movimientos"| SYS
+    CON -->|"costos, ventas"| SYS
+
+    HW -->|"tramas serie / HID"| SYS
+    LNS -->|"uplinks MQTT / webhook"| SYS
+    SYS -->|"mapas base"| OSM
+    SYS -->|"alertas"| SMTP
+    SYS -->|"exportación"| CONT

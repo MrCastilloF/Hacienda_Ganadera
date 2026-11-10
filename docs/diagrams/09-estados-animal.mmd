@@ -1,0 +1,16 @@
+%% Máquina de estados del animal — docs/01-especificacion-corregida.md §7
+stateDiagram-v2
+    [*] --> activo : nacimiento o ingreso
+    activo --> cuarentena : aislamiento sanitario
+    cuarentena --> activo : alta de cuarentena (aprobación)
+    activo --> enfermo : diagnóstico
+    enfermo --> activo : recuperación
+    enfermo --> fallecido : muerte por enfermedad
+    activo --> vendido : venta con peso de salida
+    activo --> fallecido : muerte
+    activo --> sacrificado : sacrificio
+    activo --> trasladado : salida a otra finca
+    trasladado --> activo : reingreso registrado
+    vendido --> [*]
+    fallecido --> [*]
+    sacrificado --> [*]

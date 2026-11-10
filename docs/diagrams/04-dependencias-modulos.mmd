@@ -1,0 +1,28 @@
+%% Dependencias entre módulos de dominio — docs/02-arquitectura.md §4.1
+%% Un módulo puede emitir y consumir eventos de otro; no puede importar sus repositorios.
+graph LR
+    ANI --> IDN["identificación"]
+    ANI --> GEN["genealogía"]
+    PES --> ANI
+    SAL --> ANI
+    REP --> ANI
+    REP --> NAC["nacimientos"]
+    NAC --> ANI
+    ALI --> POT
+    INV --> ANI
+    COM --> INV
+    VEN["ventas"] --> INV
+    VEN --> FIN
+    COM --> FIN
+    FIN --> ANI
+    IOT --> ANI
+    GEO --> POT
+    ALE --> ANI
+    ALE --> SAL
+    ALE --> GEO
+    RPT --> ANI
+    SYNC --> ANI
+    SYNC --> PES
+    AUD["auditoría (transversal)"] -.-> ANI
+    AUD -.-> PES
+    AUD -.-> FIN

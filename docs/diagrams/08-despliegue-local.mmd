@@ -1,0 +1,25 @@
+%% Despliegue local en la hacienda — docs/02-arquitectura.md §6.1
+graph TB
+    subgraph hacienda["Hacienda — red local"]
+        subgraph srv["Servidor (1 nodo, Linux, UPS)"]
+            direction TB
+            P["Proxy TLS :443"]
+            W["web :3000"]
+            A["api :3001"]
+            LW["lora-service"]
+            WK["worker"]
+            PG[("postgres :5432<br/>volumen SSD")]
+            RD[("redis :6379")]
+            MN[("minio :9000")]
+            BK["backup (cron + WAL)"]
+        end
+        PC["PC de pesaje<br/>Local Bridge"]
+        GW["Gateway LoRaWAN"]
+        TAB["Tabletas / celulares"]
+        NAS[("NAS / disco externo")]
+    end
+    TAB -->|"WiFi"| P
+    PC -->|"mTLS"| P
+    GW -->|"Ethernet / LTE"| LW
+    PG --> BK
+    BK --> NAS

@@ -1,0 +1,22 @@
+%% Ingesta LoRaWAN — docs/02-arquitectura.md §5.3
+sequenceDiagram
+    autonumber
+    participant T as Tag LoRaWAN
+    participant G as Gateway
+    participant LNS as ChirpStack/TTS
+    participant Q as MQTT
+    participant S as lora-service
+    participant Q2 as Cola de trabajos
+    participant DB as BD
+
+    T-->>G: uplink (payload)
+    G->>LNS: paquete
+    LNS->>Q: evento (dev_eui, f_port, f_cnt, rxinfo)
+    Q->>S: mensaje
+    S->>S: valida dispositivo autorizado + dedupe (dev_eui/f_cnt)
+    S->>S: decodifica con codec versionado
+    S->>Q2: telemetría normalizada + posición
+    Q2->>DB: inserta telemetría y posición (partición)
+    Q2->>DB: evalúa geocercas y reglas de actividad
+    Q2->>DB: crea alertas si corresponde
+    Note over DB: si el payload no se decodifica, se guarda crudo con estado undecoded

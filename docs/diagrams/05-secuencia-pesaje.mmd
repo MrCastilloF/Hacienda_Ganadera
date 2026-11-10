@@ -1,0 +1,20 @@
+%% Flujo de pesaje con báscula — docs/02-arquitectura.md §5.1
+sequenceDiagram
+    autonumber
+    participant B as Local Bridge
+    participant L as Báscula
+    participant W as PWA (pesaje)
+    participant API as API
+    participant DB as BD
+
+    L-->>B: trama cruda (RS232/TCP)
+    B->>B: parse + detección de estabilidad
+    B->>W: evento WebSocket {peso, estable, bridge_id, trama}
+    W->>W: muestra peso grande + animal identificado
+    Note over W: escaneo previo o posterior del arete
+    W->>API: POST /weighings (idempotency_key, animal, peso, dispositivo)
+    API->>DB: valida estado del animal y deduplica
+    API->>DB: inserta weigh_record (append-only)
+    API->>DB: emite evento de dominio + auditoría
+    API-->>W: 201 {id, gdp, peso_anterior}
+    W->>W: confirma y muestra resultado

@@ -1,0 +1,30 @@
+%% Núcleo del modelo entidad-relación — docs/03-modelo-de-datos.md §2
+erDiagram
+    FINCA ||--o{ POTRERO : "contiene"
+    FINCA ||--o{ ANIMAL : "aloja"
+    ROL ||--o{ USUARIO_ROL : "asigna"
+    USUARIO ||--o{ USUARIO_ROL : "recibe"
+    ROL ||--o{ ROL_PERMISO : "incluye"
+
+    ANIMAL ||--o{ ANIMAL_IDENTIFICACION : "porta"
+    ANIMAL ||--o{ PESAJE : "registra"
+    ANIMAL ||--o{ VACUNACION : "recibe"
+    ANIMAL ||--o{ MOVIMIENTO_POTRERO : "se desplaza"
+    ANIMAL ||--o{ ASIGNACION_TAG : "porta"
+    ANIMAL ||--o{ MOVIMIENTO_INVENTARIO : "genera"
+    ANIMAL ||--o{ DOCUMENTO : "adjunta"
+
+    RAZA ||--o{ ANIMAL : "clasifica"
+    POTRERO ||--o{ MOVIMIENTO_POTRERO : "origen destino"
+    BASCULA ||--o{ PESAJE : "mide"
+    TAG ||--o{ ASIGNACION_TAG : "asignado"
+    GATEWAY ||--o{ POSICION : "recibe"
+    TAG ||--o{ POSICION : "emite"
+    TAG ||--o{ TELEMETRIA : "emite"
+    GEOCERCA ||--o{ EVENTO_GEOCERCA : "dispara"
+
+    COMPRA ||--o{ COMPRA_DETALLE : "incluye"
+    VENTA ||--o{ VENTA_DETALLE : "incluye"
+    ANIMAL ||--o{ VENTA_DETALLE : "vendido"
+
+    USUARIO ||--o{ AUDIT_LOG : "actua"

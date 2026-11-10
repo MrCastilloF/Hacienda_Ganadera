@@ -1,0 +1,31 @@
+%% Diagrama de contenedores (C4 nivel 2) — docs/02-arquitectura.md §3
+graph LR
+    subgraph dispositivo["Dispositivos de usuario"]
+        PWA["apps/web<br/>Next.js PWA<br/>IndexedDB + outbox"]
+        BRG["apps/local-bridge<br/>Node + SQLite<br/>adaptadores de báscula"]
+    end
+
+    subgraph server["Servidor de la hacienda (Docker Compose)"]
+        PROXY["Proxy TLS<br/>(Caddy / Nginx)"]
+        API["apps/api<br/>NestJS<br/>REST + WebSocket"]
+        LORA["apps/lora-service<br/>consumidor de cola"]
+        WK["Worker<br/>exportaciones, jobs, alarmas"]
+        DB[("PostgreSQL 16<br/>+ PostGIS 3.4")]
+        REDIS[("Redis 7<br/>colas + caché")]
+        OBJ[("MinIO<br/>documentos")]
+        CHIRP["ChirpStack<br/>(perfil opcional)"]
+        MQTT["Mosquitto<br/>(perfil opcional)"]
+    end
+
+    PWA -->|"HTTPS / WSS"| PROXY
+    BRG -->|"mTLS + WSS"| PROXY
+    PROXY --> API
+    API --> DB
+    API --> REDIS
+    API --> OBJ
+    LORA --> REDIS
+    LORA --> DB
+    WK --> REDIS
+    WK --> DB
+    MQTT --> LORA
+    CHIRP --> MQTT

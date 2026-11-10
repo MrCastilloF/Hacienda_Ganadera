@@ -1,0 +1,26 @@
+%% Sincronización offline (outbox + conflictos) — docs/02-arquitectura.md §5.2
+sequenceDiagram
+    autonumber
+    participant W as PWA
+    participant OB as Outbox (IndexedDB)
+    participant API as API
+    participant S as Servicio de sincronización
+    participant DB as BD
+
+    W->>OB: append(command) [durable]
+    W->>W: UI "pendiente"
+    W->>API: POST /sync/batches {batch_id, commands[], checksum}
+    API->>S: verifica checksum y permisos
+    S->>DB: procesa comandos en orden HLC
+    alt comando válido
+        S->>DB: aplica + idempotency record
+        S-->>W: applied
+    else duplicado
+        S-->>W: duplicate (mismo resultado)
+    else invariante violado
+        S->>DB: guarda sync_conflict + comando íntegro
+        S-->>W: rejected/conflict con motivo
+    end
+    W->>OB: marca resultados y limpia aplicados
+    W->>API: GET /sync/changes?since=hlc
+    API-->>W: cambios para refrescar caché

@@ -1,0 +1,68 @@
+Licencia Propietaria — Todos los derechos reservados
+====================================================
+
+Copyright (c) 2026. Todos los derechos reservados.
+
+Titular: por definir (ver punto C-05 en docs/07-cierre-y-confirmaciones.md).
+Obra: plataforma "Hacienda Ganadera" (código fuente, esquema de base de datos,
+documentación, diagramas y material de diseño), alojada en el repositorio
+https://github.com/MrCastilloF/Hacienda_Ganadera
+
+1. CONCESIÓN
+   No se concede ningún derecho de uso, copia, modificación, distribución,
+   sublicencia ni explotación comercial sobre esta obra, salvo autorización
+   previa y por escrito del titular.
+
+2. USO INTERNO AUTORIZADO
+   El titular y las personas expresamente autorizadas por él pueden consultar,
+   ejecutar y modificar esta obra para la operación de la hacienda objeto del
+   proyecto. Esa autorización es personal, no transferible y revocable.
+
+3. RESTRICCIONES
+   Queda prohibido, sin autorización escrita del titular:
+   a) copiar, reproducir o distribuir la obra, total o parcialmente;
+   b) modificarla, traducirla o crear obras derivadas;
+   c) incorporarla a otro producto o servicio;
+   d) sublicenciarla, alquilarla, venderla o cederla;
+   e) retirar o alterar los avisos de autoría, marca o licencia.
+
+4. DATOS DE TERCEROS
+   Esta licencia no cubre datos personales ni información sensible de terceros
+   que se incorporen a la plataforma. Su tratamiento se rige por la normativa
+   aplicable de protección de datos y por los documentos indicados en
+   docs/01-especificacion-corregida.md, sección 14.
+
+5. COMPONENTES DE TERCEROS
+   Las dependencias de terceros conservan sus propias licencias, que prevalecen
+   sobre esta en lo que les corresponde. La lista se mantiene en el archivo de
+   bloqueo de dependencias del proyecto.
+
+6. GARANTÍAS
+   LA OBRA SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O
+   IMPLÍCITA, INCLUIDAS LAS DE COMERCIABILIDAD, IDONEIDAD PARA UN FIN
+   DETERMINADO Y NO INFRACCIÓN.
+
+7. LIMITACIÓN DE RESPONSABILIDAD
+   EN NINGÚN CASO EL TITULAR SERÁ RESPONSABLE DE DAÑOS DIRECTOS, INDIRECTOS,
+   INCIDENTALES O CONSECUENTES DERIVADOS DEL USO DE LA OBRA.
+
+8. VIGENCIA
+   Esta licencia es indefinida y se aplica desde la creación de la obra.
+
+9. LEY APLICABLE
+   Se rige por las leyes de la República de Colombia.
+
+10. CONTACTO
+    Para solicitar autorización: titular del repositorio en GitHub (MrCastilloF).
+
+-------------------------------------------------------------------------------
+ALTERNATIVAS EVALUADAS (no vigentes; sustituir este archivo si se decide otra)
+
+  - MIT: máxima apertura, permite uso comercial y obras derivadas con atribución.
+    Adecuada si el proyecto se libera como contribución abierta.
+  - Apache-2.0: como MIT, con concesión explícita de patentes.
+  - AGPL-3.0: obliga a publicar modificaciones si se ofrece como servicio en red.
+    Adecuada si se busca que las mejoras regresen a la comunidad.
+
+La decisión definitiva es el punto C-05 de docs/07 y debe registrarse en un ADR
+antes de distribuir la obra fuera del titular.

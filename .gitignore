@@ -1,0 +1,118 @@
+# ──────────────────────────────────────────────────────────────────────────────
+#  Dependencias
+# ──────────────────────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+.pnp/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Builds
+# ──────────────────────────────────────────────────────────────────────────────
+dist/
+build/
+out/
+.next/
+.nuxt/
+.turbo/
+*.tsbuildinfo
+coverage/
+.nyc_output/
+storybook-static/
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Entornos y secretos  (NUNCA commitear)
+# ──────────────────────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.test.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.crt
+!infra/caddy/*.crt.example
+secrets/
+.secrets/
+*.secret
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Base de datos y respaldos locales
+# ──────────────────────────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+pgdata/
+backups/
+*.dump
+*.backup
+pg_wal/
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Datos locales del Local Bridge
+# ──────────────────────────────────────────────────────────────────────────────
+local-bridge-data/
+bridge-queue/
+bridge-logs/
+diagnostics/*.log
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Pruebas
+# ──────────────────────────────────────────────────────────────────────────────
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+tests/fixtures/generated/
+*.lcov
+k6-results/
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Logs y temporales
+# ──────────────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
+temp/
+.tmp/
+*.pid
+*.seed
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Sistema operativo y editores
+# ──────────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+.fleet/
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Python / utilidades de scripts (si se usan)
+# ──────────────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  Excepciones: directorios que existen por estructura pero aún sin contenido
+# ──────────────────────────────────────────────────────────────────────────────
+!**/.gitkeep

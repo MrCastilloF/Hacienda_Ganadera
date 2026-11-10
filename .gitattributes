@@ -1,0 +1,40 @@
+# Normalización de finales de línea y binarios
+* text=auto eol=lf
+
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.sql  text eol=lf
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Binarios
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.gz   binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.docx binary
+*.xlsx binary
+
+# Lenguaje en GitHub
+*.mmd linguist-language=Mermaid
+*.sql linguist-language=SQL
+
+# No mostrar en diffs de revisión
+docs/diagrams/*.mmd -diff
+*.lock merge=binary

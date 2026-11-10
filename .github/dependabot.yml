@@ -1,39 +1,43 @@
 version: 2
+
+# NOTA (Fase 0): el repositorio aún no tiene package.json, por eso el ecosistema
+# npm está desactivado; Dependabot fallaría en cada ejecución. Se reactiva al
+# cerrar la Fase 1, descomentando el bloque "npm" de abajo.
 updates:
   # Dependencias de aplicación
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-      timezone: "America/Bogota"
-    open-pull-requests-limit: 5
-    versioning-strategy: "increase"
-    commit-message:
-      prefix: "chore(deps)"
-      include: "scope"
-    groups:
-      produccion:
-        dependency-type: "production"
-        update-types: ["minor", "patch"]
-      desarrollo:
-        dependency-type: "development"
-        update-types: ["minor", "patch"]
-    ignore:
-      # Actualizaciones mayores: requieren ADR y prueba manual
-      - dependency-name: "next"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react-dom"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@nestjs/*"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "prisma"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@prisma/client"
-        update-types: ["version-update:semver-major"]
+#  - package-ecosystem: "npm"
+#    directory: "/"
+#    schedule:
+#      interval: "weekly"
+#      day: "monday"
+#      time: "06:00"
+#      timezone: "America/Bogota"
+#    open-pull-requests-limit: 5
+#    versioning-strategy: "increase"
+#    commit-message:
+#      prefix: "chore(deps)"
+#      include: "scope"
+#    groups:
+#      produccion:
+#        dependency-type: "production"
+#        update-types: ["minor", "patch"]
+#      desarrollo:
+#        dependency-type: "development"
+#        update-types: ["minor", "patch"]
+#    ignore:
+#      # Actualizaciones mayores: requieren ADR y prueba manual
+#      - dependency-name: "next"
+#        update-types: ["version-update:semver-major"]
+#      - dependency-name: "react"
+#        update-types: ["version-update:semver-major"]
+#      - dependency-name: "react-dom"
+#        update-types: ["version-update:semver-major"]
+#      - dependency-name: "@nestjs/*"
+#        update-types: ["version-update:semver-major"]
+#      - dependency-name: "prisma"
+#        update-types: ["version-update:semver-major"]
+#      - dependency-name: "@prisma/client"
+#        update-types: ["version-update:semver-major"]
 
   # Acciones de GitHub
   - package-ecosystem: "github-actions"

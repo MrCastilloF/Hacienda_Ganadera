@@ -1,0 +1,68 @@
+# ──────────────────────────────────────────────────────────────────────────────
+#  Caddy — proxy TLS de la plataforma
+#  Único punto expuesto. Todo lo demás vive en la red interna.
+#
+#  TLS_MODE:
+#    internal → CA local de Caddy (por defecto, para la hacienda sin dominio)
+#    acme     → Let's Encrypt (requiere dominio público y puerto 80 accesible)
+# ──────────────────────────────────────────────────────────────────────────────
+{
+	email {$ACME_EMAIL}
+	admin off
+
+	servers {
+		protocols h1 h2
+	}
+
+	# Cabeceras de seguridad globales (RF-SEG-16)
+	# Se aplican por sitio para poder ajustar CSP.
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(self), camera=(self), microphone=(), payment=()"
+		-Server
+	}
+}
+
+{$DOMAIN} {
+	import security_headers
+
+	encode zstd gzip
+
+	# API
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+
+	# WebSocket (estado de báscula, notificaciones, progreso de jobs)
+	handle /ws* {
+		reverse_proxy api:3001
+	}
+
+	# Salud del sistema (sin exponer internos)
+	handle /health {
+		reverse_proxy api:3001
+	}
+
+	# Aplicación web
+	handle {
+		reverse_proxy web:3000
+	}
+
+	log {
+		output stdout
+		format json
+		level INFO
+	}
+}
+
+# Acceso directo al servidor por IP o nombre local (sin TLS público)
+:8080 {
+	import security_headers
+	reverse_proxy api:3001
+}

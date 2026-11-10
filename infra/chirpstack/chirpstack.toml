@@ -1,0 +1,42 @@
+# ──────────────────────────────────────────────────────────────────────────────
+#  ChirpStack v4 — configuración base para despliegue local
+#
+#  NOTA: este archivo es un punto de partida documentado. ChirpStack requiere
+#  una base de datos propia (PostgreSQL) y un Redis; en la Fase 9 se integran
+#  como servicios adicionales del perfil "lorawan".  No se activa por defecto
+#  para no duplicar infraestructura en la Fase 0.
+# ──────────────────────────────────────────────────────────────────────────────
+
+[logging]
+  level="info"
+
+[postgresql]
+  dsn="postgres://chirpstack:CHANGE_ME@postgres:5432/chirpstack?sslmode=disable"
+  max_open_connections=10
+  min_idle_connections=0
+  max_connection_lifetime="30m"
+
+[redis]
+  servers=["redis://redis:6379/1"]
+
+[network]
+  net_id="000000"
+  # Rango regional; ajustar a la banda autorizada en el país de operación.
+  enabled_regions=["us915","au915"]
+
+[api]
+  bind="0.0.0.0:8080"
+  secret="CHANGE_ME_API_SECRET"
+
+[gateway]
+  # El gateway se conecta al gateway bridge; no se expone a Internet.
+  allow_unknown_gateways=false
+
+[integration]
+  enabled=["mqtt"]
+
+  [integration.mqtt]
+    server="tcp://mosquitto:1883"
+    username="chirpstack"
+    password="CHANGE_ME_MQTT"
+    json=true

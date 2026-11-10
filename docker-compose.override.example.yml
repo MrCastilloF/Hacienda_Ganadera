@@ -1,0 +1,65 @@
+# ──────────────────────────────────────────────────────────────────────────────
+#  docker-compose.override.example.yml
+#
+#  Copiar a docker-compose.override.yml (ignorado por Git) y ajustar.
+#  Docker Compose lo aplica automáticamente al ejecutar `docker compose up`.
+#
+#  Uso típico:
+#    - Exponer la base solo en el host de desarrollo (ya viene así por defecto).
+#    - Montar el código para hot-reload.
+#    - Cambiar límites de recursos del servidor de la hacienda.
+#    - Publicar el proxy en otra IP o dominio local.
+# ──────────────────────────────────────────────────────────────────────────────
+name: hacienda-ganadera
+
+services:
+  # ── Desarrollo: hot reload del API ────────────────────────────────────────
+  api:
+    profiles: ["app"]
+    build:
+      target: development
+    command: ["pnpm", "run", "dev"]
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    ports:
+      - "127.0.0.1:3001:3001"
+
+  web:
+    profiles: ["app"]
+    build:
+      target: development
+    command: ["pnpm", "run", "dev"]
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  # ── Servidor de la hacienda: límites de recursos ──────────────────────────
+  # Descomentar y ajustar según el hardware real (docs/05 §1.1).
+  postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    shm_size: 256mb
+
+  redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  # ── Desarrollo: acceso externo al proxy en un puerto distinto ─────────────
+  # proxy:
+  #   ports:
+  #     - "8443:443"

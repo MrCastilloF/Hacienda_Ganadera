@@ -1,0 +1,66 @@
+version: 2
+updates:
+  # Dependencias de aplicación
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Bogota"
+    open-pull-requests-limit: 5
+    versioning-strategy: "increase"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      produccion:
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
+      desarrollo:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
+    ignore:
+      # Actualizaciones mayores: requieren ADR y prueba manual
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@nestjs/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "prisma"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@prisma/client"
+        update-types: ["version-update:semver-major"]
+
+  # Acciones de GitHub
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "ci(deps)"
+    labels:
+      - "deps"
+      - "ci"
+
+  # Imágenes Docker del compose
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "build(deps)"
+    labels:
+      - "deps"
+      - "infra"
+    ignore:
+      # PostgreSQL, PostGIS y Redis se actualizan con ventana de mantenimiento
+      # y migración probada (docs/runbooks/actualizacion.md).
+      - dependency-name: "postgis/postgis"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "redis"
+        update-types: ["version-update:semver-major"]

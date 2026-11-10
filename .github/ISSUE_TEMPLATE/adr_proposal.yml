@@ -1,0 +1,74 @@
+name: "📐 Propuesta de ADR"
+description: "Una decisión estructural que debe quedar registrada"
+title: "adr: <decisión en una línea>"
+labels: ["adr requerido", "necesita revisión"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Un ADR se escribe **antes** del PR que implementa la decisión. Sin alternativas
+        consideradas, el ADR se rechaza. Plantilla en `docs/adr/README.md`.
+
+  - type: input
+    id: titulo
+    attributes:
+      label: Título del ADR
+      placeholder: "ADR-0011: Usar NATS JetStream para la ingesta IoT"
+    validations:
+      required: true
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto
+      description: Hechos y restricciones reales que obligan a decidir.
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decisión propuesta
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas consideradas
+      description: Al menos dos, con ventajas, desventajas y motivo de descarte.
+      placeholder: |
+        | Alternativa | Ventajas | Desventajas | Motivo de descarte |
+    validations:
+      required: true
+
+  - type: textarea
+    id: consecuencias
+    attributes:
+      label: Consecuencias
+      description: Positivas, negativas y riesgos residuales.
+    validations:
+      required: true
+
+  - type: textarea
+    id: cumplimiento
+    attributes:
+      label: Cómo se verifica que la decisión se respeta
+      placeholder: "Regla de CI / prueba / restricción de base de datos / revisión de PR"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impacto
+    attributes:
+      label: Ámbito afectado
+      options:
+        - Modelo de datos
+        - Contrato de API / sincronización
+        - Seguridad
+        - Infraestructura / despliegue
+        - Frontend / UX
+        - IoT / hardware
+        - Proceso de trabajo
+    validations:
+      required: true

@@ -1,0 +1,156 @@
+name: ci
+
+# Calidad obligatoria en cada PR y en cada push a las ramas protegidas.
+# La Fase 0 es documental: los jobs de aplicación se activan solos cuando
+# exista package.json / Dockerfile, sin tocar este archivo.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  # ── Documentación ───────────────────────────────────────────────────────────
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Verificar estructura, enlaces y ADR
+        run: node scripts/ci/check-docs.mjs --verbose
+
+      - name: Verificar que los documentos requeridos existen
+        run: |
+          set -e
+          for f in \
+            README.md LICENSE CHANGELOG.md ROADMAP.md CONTRIBUTING.md SECURITY.md \
+            docs/README.md \
+            docs/00-validacion-de-la-especificacion.md \
+            docs/01-especificacion-corregida.md \
+            docs/02-arquitectura.md \
+            docs/03-modelo-de-datos.md \
+            docs/04-estrategia-de-pruebas.md \
+            docs/05-requisitos-hardware-y-riesgos.md \
+            docs/06-estructura-y-convenciones.md \
+            docs/07-cierre-y-confirmaciones.md \
+            docs/adr/README.md ; do
+            if [ ! -f "$f" ]; then echo "FALTA: $f"; exit 1; fi
+          done
+          echo "Todos los documentos requeridos existen."
+
+  # ── Secretos ────────────────────────────────────────────────────────────────
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Buscar credenciales filtradas
+        run: node scripts/ci/check-secrets.mjs
+
+  # ── Docker Compose ──────────────────────────────────────────────────────────
+  compose:
+    name: compose
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validar docker-compose.yml
+        run: docker compose -f docker-compose.yml config -q && echo "compose válido"
+
+      - name: Validar el archivo de ejemplo de override
+        run: docker compose -f docker-compose.yml -f docker-compose.override.example.yml config -q && echo "override válido"
+
+  # ── Aplicación (se activa cuando existe código) ─────────────────────────────
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detectar proyecto Node
+        id: detect
+        run: |
+          if [ -f package.json ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Instalar dependencias
+        if: steps.detect.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        if: steps.detect.outputs.present == 'true'
+        run: pnpm run lint
+
+      - name: Tipos
+        if: steps.detect.outputs.present == 'true'
+        run: pnpm run typecheck
+
+      - name: Pruebas unitarias
+        if: steps.detect.outputs.present == 'true'
+        run: pnpm run test -- --coverage
+
+      - name: Auditoría de dependencias
+        if: steps.detect.outputs.present == 'true'
+        run: pnpm audit --audit-level=high
+
+      - name: Aviso (sin proyecto Node todavía)
+        if: steps.detect.outputs.present != 'true'
+        run: |
+          echo "Repositorio documental (Fase 0): no hay package.json. Job omitido sin fallo."
+
+  # ── Estado único requerido por la protección de ramas ───────────────────────
+  ci:
+    name: ci
+    if: always()
+    needs: [docs, secrets, compose, quality]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resumir resultados
+        run: |
+          echo "docs    = ${{ needs.docs.result }}"
+          echo "secrets = ${{ needs.secrets.result }}"
+          echo "compose = ${{ needs.compose.result }}"
+          echo "quality = ${{ needs.quality.result }}"
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || \
+             [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "::error::Algún job obligatorio falló o fue cancelado."
+            exit 1
+          fi
+          echo "Todo en verde."

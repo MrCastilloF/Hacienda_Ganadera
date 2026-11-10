@@ -1,0 +1,109 @@
+name: nightly
+
+# Pruebas que no caben en un PR: E2E, carga, restauración y verificación de
+# integridad de la auditoría. En la Fase 0 solo corre la verificación de
+# documentación; los demás pasos se activan cuando existe el código.
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 22:00 en America/Bogota (UTC-5)
+  workflow_dispatch:
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  repo:
+    name: repo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Documentación
+        run: node scripts/ci/check-docs.mjs
+      - name: Secretos
+        run: node scripts/ci/check-secrets.mjs
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detectar proyecto
+        id: detect
+        run: |
+          if [ -f package.json ] && [ -d tests/e2e ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: pnpm/action-setup@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - name: Levantar la plataforma
+        if: steps.detect.outputs.present == 'true'
+        run: |
+          cp .env.example .env
+          docker compose --profile app up -d --build
+          docker compose --profile app ps
+      - name: Ejecutar E2E
+        if: steps.detect.outputs.present == 'true'
+        run: pnpm run test:e2e
+      - name: Recolectar reporte
+        if: always() && steps.detect.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+      - name: Bajar servicios
+        if: always()
+        run: docker compose --profile app down -v || true
+
+  audit-integrity:
+    name: audit-integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detectar migraciones
+        id: detect
+        run: |
+          if [ -d infra/postgres/migrations ] && [ -n "$(ls -A infra/postgres/migrations 2>/dev/null)" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Verificar cadena de auditoría
+        if: steps.detect.outputs.present == 'true'
+        run: |
+          cp .env.example .env
+          docker compose up -d postgres
+          sleep 10
+          echo "La verificación de la cadena se ejecuta con el worker (Fase 1)."
+          echo "Aquí se invocará: pnpm run audit:verify --from=2026-01-01"
+      - name: Aviso
+        if: steps.detect.outputs.present != 'true'
+        run: echo "Sin migraciones todavía (Fase 0)."
+
+  restore-drill:
+    name: restore-drill
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensayo de restauración
+        run: |
+          echo "Requiere un respaldo real y el runbook docs/runbooks/restauracion.md."
+          echo "Se activa a partir de la Fase 1; en Fase 0 se informa y no falla."
+          test -f docs/runbooks/restauracion.md || echo "runbook pendiente de la Fase 1"

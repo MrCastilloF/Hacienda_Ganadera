@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔐 Reportar una vulnerabilidad
+    url: https://github.com/MrCastilloF/Hacienda_Ganadera/security/advisories/new
+    about: No abras un issue público para problemas de seguridad. Lee SECURITY.md.
+  - name: 📖 Especificación y arquitectura
+    url: https://github.com/MrCastilloF/Hacienda_Ganadera/blob/main/docs/README.md
+    about: Antes de proponer algo, revisa si ya está especificado o descartado.
+  - name: 📋 Cómo contribuir
+    url: https://github.com/MrCastilloF/Hacienda_Ganadera/blob/main/CONTRIBUTING.md
+    about: Flujo de ramas, commits, reglas de código y checklist del PR.

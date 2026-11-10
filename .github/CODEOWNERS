@@ -1,0 +1,25 @@
+# Propietarios de revisión
+# Se revisan por ruta. Ajustar cuando se sume el equipo.
+
+*                       @MrCastilloF
+
+# Especificación, arquitectura y decisiones: revisión obligatoria del arquitecto
+/docs/                  @MrCastilloF
+/docs/adr/              @MrCastilloF
+/docs/diagrams/         @MrCastilloF
+
+# Seguridad y secretos
+/SECURITY.md            @MrCastilloF
+/.github/workflows/     @MrCastilloF
+/scripts/ci/            @MrCastilloF
+
+# Esquema y migraciones
+/infra/postgres/        @MrCastilloF
+
+# Infraestructura
+/docker-compose*.yml    @MrCastilloF
+/infra/                 @MrCastilloF
+/.devcontainer/         @MrCastilloF
+
+# Documentos legales
+/LICENSE                @MrCastilloF

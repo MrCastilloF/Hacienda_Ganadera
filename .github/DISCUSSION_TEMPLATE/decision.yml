@@ -1,0 +1,40 @@
+title: "Decisión a discutir"
+labels: ["adr requerido"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa esta plantilla para discutir una decisión **antes** de escribir el ADR.
+        Si la discusión concluye, el resultado se registra en `docs/adr/`.
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto
+      description: Qué situación obliga a decidir.
+    validations:
+      required: true
+
+  - type: textarea
+    id: opciones
+    attributes:
+      label: Opciones
+      description: Al menos dos, con ventajas y desventajas.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impacto
+    attributes:
+      label: Impacto si se decide mal
+      description: Qué se rompe, qué cuesta revertirlo.
+    validations:
+      required: true
+
+  - type: input
+    id: fecha
+    attributes:
+      label: Fecha límite para decidir
+      placeholder: "AAAA-MM-DD"
+    validations:
+      required: true

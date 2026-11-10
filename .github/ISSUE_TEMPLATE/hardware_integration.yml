@@ -1,0 +1,90 @@
+name: "🔌 Integración de hardware"
+description: "Báscula, lector, tag o gateway: declarar, simular o verificar"
+title: "hardware: <dispositivo> <marca> <modelo>"
+labels: ["hardware", "necesita confirmación"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Toda integración tiene un **estado**: `declared` → `simulated` → `lab_verified` → `field_verified`.
+        No se puede saltar pasos y no se puede afirmar una validación que no existe (`INV-09`).
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de dispositivo
+      options:
+        - Báscula ganadera
+        - Lector de código de barras / RFID
+        - Tag LoRaWAN de bajo consumo
+        - Tag GPS/GNSS + LoRaWAN
+        - Gateway LoRaWAN
+        - Otro (describir)
+    validations:
+      required: true
+
+  - type: input
+    id: marca
+    attributes:
+      label: Marca y modelo
+      placeholder: "Marca / Modelo / Año"
+    validations:
+      required: true
+
+  - type: input
+    id: identificadores
+    attributes:
+      label: Identificadores
+      description: Serie, DevEUI, RFID, etc. **No pegar claves (AppKey, NwkKey).**
+    validations:
+      required: false
+
+  - type: dropdown
+    id: transporte
+    attributes:
+      label: Transporte / interfaz
+      options: ["RS232", "RS485 (conversor)", "USB serie", "USB HID", "TCP/IP", "Wi-Fi", "LoRaWAN", "Bluetooth", "Otro"]
+    validations:
+      required: true
+
+  - type: textarea
+    id: protocolo
+    attributes:
+      label: Protocolo o trama conocida
+      description: Si existe manual, cítalo y pega una trama de ejemplo. Si no existe, escríbelo.
+      placeholder: |
+        Ejemplo de trama: "ST,GS,+00450.0kg\r\n"
+        Estabilidad: carácter 'S' en posición 2
+        Manual: sí / no / no disponible
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estado
+    attributes:
+      label: Estado de integración actual
+      options:
+        - "declared — solo especificado, sin probar"
+        - "simulated — probado contra simulador"
+        - "lab_verified — probado con hardware en laboratorio"
+        - "field_verified — probado en la hacienda"
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidencia de la verificación
+      description: Acta, capturas, logs del modo diagnóstico, medición contra patrón.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: requisitos
+    attributes:
+      label: Requisitos para avanzar
+      options:
+        - label: Hay acceso físico al dispositivo
+        - label: Existe adaptador en `packages/scale-protocols` (o equivalente)
+        - label: Existe simulador que reproduce las tramas
+        - label: Se registró el acta en `docs/manuals/integraciones/`

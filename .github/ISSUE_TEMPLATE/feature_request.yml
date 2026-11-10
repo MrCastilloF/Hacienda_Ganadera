@@ -1,0 +1,88 @@
+name: "✨ Nueva funcionalidad"
+description: "Algo que el sistema debe hacer y todavía no hace"
+title: "feat: <resumen en una línea>"
+labels: ["tipo: feat", "necesita triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Recuerda: **no se reduce el alcance para simplificar**. Si algo se propone, se propone
+        completo, o se registra como fuera de alcance en `docs/01` §1.2.
+
+  - type: textarea
+    id: necesidad
+    attributes:
+      label: Necesidad operativa
+      description: Qué problema real de la hacienda resuelve. Sin esto, no hay prioridad.
+    validations:
+      required: true
+
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Comportamiento propuesto
+      description: Qué debe hacer el sistema, paso a paso.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options:
+        - Animales / identificación
+        - Pesajes / báscula
+        - Local Bridge
+        - Salud / veterinaria
+        - Reproducción / nacimientos
+        - Potreros / movimientos
+        - Alimentación
+        - Inventario / compras / ventas
+        - Finanzas
+        - IoT / LoRaWAN
+        - Mapas / geocercas
+        - Alertas
+        - Reportes
+        - Documentos
+        - Usuarios / permisos
+        - Sincronización / offline
+        - Auditoría
+        - Infraestructura
+    validations:
+      required: true
+
+  - type: input
+    id: fase
+    attributes:
+      label: Fase sugerida
+      placeholder: "F2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Cómo se demuestra que está hecho. Deben ser verificables.
+      placeholder: |
+        - [ ] Dado un animal ..., cuando ..., entonces ...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: impacto
+    attributes:
+      label: Impacto
+      options:
+        - label:Requiere migración de base de datos
+        - label:Requiere ADR (decisión estructural)
+        - label:Requiere hardware que aún no está disponible
+        - label:Introduce datos simulados (deben marcarse como SIMULATOR)
+        - label:Afecta un contrato de API o de sincronización
+
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas consideradas
+    validations:
+      required: false

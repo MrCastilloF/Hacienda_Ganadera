@@ -1,0 +1,123 @@
+name: "🐞 Reporte de defecto"
+description: "Algo no funciona como debe"
+title: "fix: <resumen en una línea>"
+labels: ["tipo: bug", "necesita triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Antes de reportar: busca si ya existe un issue abierto. **No incluyas credenciales,
+        datos personales reales ni capturas con información de terceros.**
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo afectado
+      options:
+        - Animales / identificación
+        - Pesajes / báscula
+        - Local Bridge
+        - Salud / veterinaria
+        - Reproducción / nacimientos
+        - Potreros / movimientos
+        - Alimentación
+        - Inventario / compras / ventas
+        - Finanzas
+        - IoT / LoRaWAN / tags / gateways
+        - Mapas / geocercas
+        - Alertas / notificaciones
+        - Reportes / exportaciones
+        - Documentos
+        - Usuarios / permisos / seguridad
+        - Sincronización / offline
+        - Auditoría
+        - Infraestructura / Docker / despliegue
+        - Documentación
+    validations:
+      required: true
+
+  - type: dropdown
+    id: fase
+    attributes:
+      label: Fase en la que se detectó
+      options: ["F0", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"]
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión
+      description: Etiqueta o commit (por ejemplo v0.1.0 o abc1234)
+      placeholder: "v0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: entorno
+    attributes:
+      label: Entorno
+      options:
+        - Local (docker compose)
+        - Servidor de la hacienda
+        - Staging
+        - Producción
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. Ir a ...
+        2. Escanear arete ...
+        3. Observar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+
+  - type: textarea
+    id: obtenido
+    attributes:
+      label: Resultado obtenido
+      description: Incluye el mensaje de error y el `request_id` si está disponible.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad
+      options:
+        - "Crítica: pérdida o corrupción de datos, o el sistema no opera"
+        - "Alta: bloquea una tarea de campo"
+        - "Media: hay una forma alternativa de trabajo"
+        - "Baja: cosmética o molestia menor"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: invariantes
+    attributes:
+      label: ¿Afecta algún invariante?
+      options:
+        - label: INV-05 / INV-06 — historia o auditoría (¿se modificó o perdió un registro histórico?)
+        - label: INV-03 / INV-04 — ubicación (¿se mostró una posición sin GPS o inventada?)
+        - label: INV-08 — datos simulados presentados como reales
+        - label: INV-09 — se afirmó una validación física que no existe
+        - label: Ninguno
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidencia
+      description: Logs, capturas, trama de báscula o payload. Sin datos personales.
+    validations:
+      required: false

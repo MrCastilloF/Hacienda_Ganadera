@@ -1,0 +1,124 @@
+name: release
+
+# Publica una versión: valida el repositorio, construye imágenes (cuando
+# existan) y crea el release con notas tomadas del CHANGELOG.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión a publicar (ej. 0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  NODE_VERSION: "22"
+  REGISTRY: ghcr.io
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      has_app: ${{ steps.detect.outputs.present }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Documentación
+        run: node scripts/ci/check-docs.mjs
+      - name: Secretos
+        run: node scripts/ci/check-secrets.mjs
+      - name: Compose
+        run: docker compose config -q
+      - name: Detectar aplicaciones
+        id: detect
+        run: |
+          if [ -f package.json ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Verificar CHANGELOG
+        run: |
+          if ! grep -q "## \[${GITHUB_REF_NAME#v}\]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md no tiene entrada para ${GITHUB_REF_NAME}"
+            exit 1
+          fi
+          echo "CHANGELOG correcto para ${GITHUB_REF_NAME}"
+
+  images:
+    name: images
+    needs: validate
+    if: needs.validate.outputs.has_app == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        service: [api, web, lora-service]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detectar Dockerfile
+        id: detect
+        run: |
+          if [ -f "apps/${{ matrix.service }}/Dockerfile" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: docker/setup-buildx-action@v3
+        if: steps.detect.outputs.present == 'true'
+      - uses: docker/login-action@v3
+        if: steps.detect.outputs.present == 'true'
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        if: steps.detect.outputs.present == 'true'
+        with:
+          context: ./apps/${{ matrix.service }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:latest
+          provenance: true
+          sbom: true
+
+  release:
+    name: release
+    needs: [validate, images]
+    if: always() && needs.validate.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extraer notas del CHANGELOG
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\["v"\\]" {flag=1; next}
+            flag && /^## \[/ {exit}
+            flag {print}
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then echo "Ver CHANGELOG.md" > release-notes.md; fi
+          head -40 release-notes.md
+
+      - name: Crear release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Hacienda Ganadera ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            --verify-tag

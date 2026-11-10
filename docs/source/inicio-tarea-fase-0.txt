@@ -1,0 +1,37 @@
+# Prompt: Validar y mejorar la especificación del proyecto Hacienda_Ganadera y crear el repositorio en GitHub (https://github.com/MrCastilloF)
+
+Actúa como arquitecto de software senior y líder técnico con experiencia en plataformas empresariales de gestión agropecuaria, IoT ganadero, sistemas offline-first y despliegues en infraestructura local o híbrida. Trabajarás sobre mi proyecto de plataforma integral de gestión ganadera.
+
+## Contexto y fuente
+
+Adjunto el archivo `Hacienda_Ganadera.txt`, que contiene el prompt de especificación original del proyecto. Su resumen es el siguiente: la plataforma debe ser una solución empresarial modular, segura, escalable y operable en infraestructura local, preparada para despliegue cloud o híbrido, y utilizable desde computador, tableta y celular. Debe mantener trazabilidad histórica e inalterable de cada animal desde su nacimiento o ingreso hasta su salida, e incluir los módulos de identificación y genealogía, pesajes y crecimiento, salud y reproducción, nacimientos, alimentación, potreros y movimientos, inventario, compras, ventas y finanzas, documentos, auditoría, alertas y reportes. La stack propuesta es React/Next.js/TypeScript, NestJS, PostgreSQL/PostGIS, API REST con OpenAPI, PWA, Docker y mapas con OpenStreetMap mediante Leaflet o MapLibre.
+
+Requisitos prioritarios que debes preservar sin diluir:
+
+- **Local Bridge instalable** que conecte básculas por RS232, RS485, USB o TCP/IP, interprete protocolos mediante adaptadores, encole datos sin conexión y sincronice después.
+- **Arquitectura IoT** con LoRaWAN, ChirpStack, MQTT y webhooks, con capacidad inicial para más de 2.000 animales/tags y crecimiento a 5.000 dispositivos.
+- **Distinción explícita de ubicaciones**: coordenadas GPS/GNSS, ubicaciones estimadas y última ubicación conocida. Está prohibido inventar posiciones o atribuir GPS a tags que no lo tengan.
+- **Seguridad**: autenticación, RBAC, permisos granulares, protección de secretos, auditoría y respaldos.
+- **Pruebas**: unitarias, de integración, E2E, offline, hardware e IoT. Los simuladores deben identificar claramente los datos simulados.
+- **Implementación por 12 fases**, desde arquitectura y seguridad hasta IoT, mapas, offline, pruebas y despliegue.
+- **Criterio de terminado**: persistencia, integraciones simuladas, mapas, alertas, reportes, offline, Docker, pruebas y documentación deben estar funcionales.
+
+## Tarea
+
+Realiza las siguientes tareas en este orden:
+
+1. **Validación de la especificación**: revisa el documento adjunto e identifica ambigüedades, contradicciones, requisitos faltantes, riesgos técnicos y supuestos no declarados. Presenta cada hallazgo con su impacto y una recomendación concreta. Señala en particular los riesgos de la operación offline con sincronización de datos, la integridad de la trazabilidad inalterable y la gestión de conflictos en la sincronización.
+
+2. **Propuesta de mejora**: reescribe la especificación corregida y completada, conservando todos los requisitos explícitos del original. No elimines reglas ni restricciones existentes, incluidas las prohibiciones sobre ubicaciones GPS.
+
+3. **Preparación del repositorio**: define la estructura inicial del repositorio autocontenido llamado `Hacienda_Ganadera` en la cuenta de GitHub `https://github.com/MrCastilloF`. Incluye el árbol de carpetas, el README inicial, el archivo de licencia sugerido, `.gitignore`, `docker-compose` base, la plantilla de documentación de arquitectura y decisiones (ADR), y los comandos de Git necesarios para inicializar, versionar y publicar el repositorio con ramas y convenciones de commits claras. El repositorio debe poder mantenerse de forma autogestionable: incluye la configuración de issues, plantillas de pull request y una estrategia de CI básica.
+
+4. **Arquitectura, diagramas y modelo de datos**: antes de cualquier código, entrega la arquitectura de componentes, los diagramas (contexto, contenedores y despliegue), el modelo de datos relacional con PostGIS, las dependencias principales, la estrategia de pruebas y la lista de requisitos de hardware y riesgos.
+
+5. **Cierre**: indica qué sería necesario confirmar antes de iniciar la Fase 1 de implementación.
+
+No escribas código de la aplicación en esta etapa. Limítate a la especificación, la estructura del repositorio y la documentación técnica. La implementación de la Fase 1 se iniciará únicamente después de aprobar estos entregables.
+
+## Formato de salida
+
+Organiza la respuesta con encabezados por cada una de las cinco tareas. Usa tablas para los hallazgos de validación y para el modelo de datos. Usa bloques de código para la estructura de carpetas, los comandos de Git y los diagramas en Mermaid o PlantUML. Sé preciso y evita relleno; cada sección debe aportar una decisión o un dato verificable.

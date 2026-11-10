@@ -1,0 +1,1521 @@
+PROMPT MAESTRO
+DESARROLLO DE PLATAFORMA WEB INTEGRAL PARA ADMINISTRACIÓN, TRAZABILIDAD Y MONITOREO DE UNA HACIENDA GANADERA
+1. ROL DEL EQUIPO
+
+Actúa como un equipo senior multidisciplinario compuesto por:
+
+Arquitecto de software.
+Desarrollador Full Stack senior.
+Ingeniero Backend.
+Ingeniero Frontend.
+Especialista PostgreSQL/PostGIS.
+Especialista DevOps.
+Especialista en integración de hardware.
+Especialista en básculas electrónicas.
+Especialista en códigos de barras y RFID.
+Especialista IoT.
+Especialista en LoRa y LoRaWAN.
+Especialista en GPS/GNSS y sistemas geoespaciales.
+Diseñador UI/UX.
+Especialista en gestión agropecuaria y ganadera.
+Especialista en ciberseguridad.
+Ingeniero de QA y pruebas.
+
+Tu misión es diseñar, desarrollar, probar, documentar y dejar desplegable una plataforma empresarial para administrar una hacienda ganadera de ciclo completo.
+
+No quiero solamente:
+
+Mockups.
+Pantallas estáticas.
+Una prueba de concepto visual.
+Un CRUD básico.
+Datos simulados presentados como reales.
+Código incompleto o pseudocódigo cuando se solicite la implementación.
+
+Quiero una aplicación funcional, modular, segura, escalable y preparada para utilizarse en una hacienda real.
+
+2. OBJETIVO GENERAL
+
+La plataforma debe gestionar de forma integral el ciclo de vida de cada animal, desde su nacimiento o ingreso a la hacienda hasta su venta, traslado, sacrificio, fallecimiento o salida.
+
+Cada animal debe conservar una historia única y permanente, incluyendo:
+
+Identificación.
+Genealogía.
+Ubicación.
+Pesajes.
+Crecimiento.
+Salud.
+Vacunación.
+Tratamientos.
+Reproducción.
+Alimentación.
+Movimientos.
+Potreros.
+Costos.
+Compras y ventas.
+Documentos.
+Geolocalización.
+Tag IoT asignado.
+Historial de actividad.
+Alertas.
+Auditoría.
+
+Los registros históricos nunca deberán alterarse retroactivamente porque cambie la información actual del animal.
+
+3. PRINCIPIOS FUNDAMENTALES
+
+Priorizar:
+
+Trazabilidad individual del animal.
+Automatización del pesaje.
+Integración con código de barras.
+Integración con básculas ganaderas.
+Operación con conectividad limitada.
+Integración IoT mediante LoRaWAN.
+Geolocalización mediante GPS/GNSS cuando el dispositivo disponga de esta capacidad.
+Monitoreo mediante tags de bajo consumo.
+Seguridad.
+Auditoría.
+Alta disponibilidad local.
+Escalabilidad.
+Bajo consumo energético de dispositivos.
+Interoperabilidad.
+Facilidad de uso en campo.
+4. ARQUITECTURA TECNOLÓGICA
+
+Utilizar preferiblemente:
+
+Frontend
+React.
+Next.js.
+TypeScript.
+Tailwind CSS.
+Componentes UI modernos.
+PWA.
+Backend
+Node.js.
+NestJS o arquitectura empresarial equivalente.
+TypeScript.
+Base de datos
+PostgreSQL.
+PostGIS.
+Prisma ORM cuando sea compatible con los requerimientos.
+SQL nativo cuando determinadas operaciones geoespaciales lo requieran.
+API
+REST.
+OpenAPI/Swagger.
+WebSocket cuando se requiera información en tiempo real.
+IoT
+LoRaWAN.
+ChirpStack como alternativa de despliegue local.
+Arquitectura preparada para integrar The Things Stack u otros servidores compatibles.
+MQTT.
+Webhooks.
+API REST.
+Visualización geográfica
+OpenStreetMap.
+Leaflet o MapLibre.
+PostGIS.
+Infraestructura
+Docker.
+Docker Compose.
+Linux.
+Servidor local.
+Preparación para despliegue cloud, híbrido o local.
+
+El sistema debe funcionar desde:
+
+Computadores.
+Tabletas.
+Celulares.
+5. ARQUITECTURA DE ALTO NIVEL
+
+Diseñar la solución aproximadamente bajo este flujo:
+
+ANIMAL
+
+↓
+
+Identificación
+
+Arete.
+Código de barras.
+RFID opcional.
+Tag LoRaWAN.
+Tag GPS/GNSS + LoRaWAN cuando corresponda.
+
+↓
+
+CAPA DE CAMPO
+
+Básculas.
+Lectores.
+Tags.
+Sensores.
+Gateways LoRaWAN.
+
+↓
+
+CAPA DE INTEGRACIÓN
+
+Local Bridge para básculas.
+ChirpStack/servidor LoRaWAN.
+MQTT.
+Webhooks.
+APIs.
+LoRa Integration Service.
+
+↓
+
+BACKEND ERP
+
+Usuarios.
+Animales.
+Pesajes.
+Salud.
+Reproducción.
+Inventario.
+Potreros.
+Finanzas.
+IoT.
+Alertas.
+Reportes.
+
+↓
+
+DATOS
+
+PostgreSQL.
+PostGIS.
+almacenamiento de documentos.
+auditoría.
+respaldos.
+
+↓
+
+FRONTEND
+
+Dashboard.
+Ficha del animal.
+Pesajes.
+Mapas.
+Alertas.
+Inventario.
+Reportes.
+Administración.
+6. SEGURIDAD, USUARIOS, ROLES Y PERMISOS
+
+Implementar:
+
+Inicio de sesión.
+Cierre de sesión.
+Recuperación de contraseña.
+Administración de usuarios.
+JWT.
+Refresh tokens.
+Control de sesiones.
+Bloqueo de usuarios.
+Registro de intentos fallidos.
+RBAC.
+Permisos por módulo y operación.
+Auditoría.
+
+Roles iniciales:
+
+Superadministrador.
+Administrador de hacienda.
+Veterinario.
+Mayordomo.
+Operario.
+Responsable de báscula.
+Contador.
+Usuario de consulta.
+
+Permitir controlar independientemente:
+
+Consultar.
+Crear.
+Modificar.
+Eliminar.
+Aprobar.
+Anular.
+Exportar.
+7. REGISTRO E IDENTIFICACIÓN DE ANIMALES
+
+Cada animal tendrá una ficha única.
+
+Identificación
+ID interno.
+Número de arete.
+Código de barras único.
+RFID opcional.
+Nombre.
+Fotografía.
+Identificación oficial.
+Raza.
+Cruce racial.
+Color.
+Características particulares.
+Información biológica
+Fecha de nacimiento.
+Sexo.
+Peso de nacimiento.
+Edad automática.
+Estado productivo.
+Condición corporal.
+Procedencia.
+Madre.
+Padre.
+Tipo de nacimiento.
+Observaciones.
+Ubicación
+Hacienda/finca.
+Potrero.
+Lote.
+Corral.
+Ubicación administrativa.
+Última ubicación geográfica disponible.
+Estado
+Activo.
+Cuarentena.
+Enfermo.
+Vendido.
+Fallecido.
+Sacrificado.
+Trasladado.
+
+Permitir consulta mediante:
+
+Arete.
+Código de barras.
+RFID.
+Buscador del sistema.
+
+La ficha debe organizar los diferentes historiales mediante pestañas.
+
+8. BÁSCULA ELECTRÓNICA Y CÓDIGO DE BARRAS
+
+Este módulo es crítico.
+
+Flujo:
+
+Escaneo → identificación → recepción del peso → validación → confirmación → almacenamiento → actualización del historial
+
+El operario:
+
+Ingresa a pesaje.
+Escanea el animal.
+El sistema identifica el registro.
+Presenta su ficha.
+La báscula transmite el peso.
+El sistema detecta un peso estable.
+Relaciona peso y animal.
+El usuario confirma.
+Registra fecha, hora, dispositivo y responsable.
+Actualiza la historia automáticamente.
+
+Compatibilidad preparada para:
+
+RS232.
+RS485.
+USB.
+TCP/IP.
+Wi-Fi.
+Protocolos ASCII.
+Protocolos propietarios mediante adaptadores.
+
+Lectores:
+
+USB HID.
+Bluetooth.
+Serial.
+Code 128.
+Code 39.
+EAN-13.
+QR.
+9. LOCAL BRIDGE DE HARDWARE
+
+No asumir que el navegador puede acceder directamente a cualquier báscula.
+
+Desarrollar un Local Bridge instalable en el computador de pesaje.
+
+Debe:
+
+Detectar dispositivos.
+Leer puerto serial.
+Leer USB cuando corresponda.
+Configurar COM.
+Configurar baud rate.
+Configurar paridad.
+Configurar bits.
+Seleccionar protocolo.
+Interpretar tramas.
+Detectar estabilidad.
+Capturar peso.
+Transmitirlo al ERP mediante WebSocket/API.
+Indicar conexión.
+Indicar errores.
+Registrar diagnóstico.
+Trabajar localmente sin Internet.
+Mantener una cola cuando el servidor no esté disponible.
+Sincronizar posteriormente.
+
+Evaluar Web Serial y WebUSB únicamente cuando sean compatibles.
+
+La arquitectura de adaptadores debe permitir agregar nuevas marcas y modelos sin rediseñar el ERP.
+
+10. HISTORIAL DE PESOS Y CRECIMIENTO
+
+Registrar:
+
+Fecha.
+Hora.
+Peso.
+Edad.
+Responsable.
+Tipo.
+Observaciones.
+Báscula.
+Ubicación disponible.
+
+Calcular:
+
+Peso actual.
+Peso anterior.
+Diferencia.
+Ganancia/pérdida.
+Ganancia diaria.
+Ganancia mensual.
+Peso promedio por lote.
+Curva de crecimiento.
+
+Comparar:
+
+Animales.
+Razas.
+Lotes.
+Periodos.
+11. SALUD Y VETERINARIA
+
+Crear historia clínica individual.
+
+Vacunas
+
+Registrar:
+
+Vacuna.
+Enfermedad objetivo.
+Fecha.
+Dosis.
+Lote.
+Laboratorio.
+Vía.
+Próxima aplicación.
+Veterinario.
+Observaciones.
+Enfermedades y tratamientos
+Fecha.
+Síntomas.
+Diagnóstico.
+Tratamiento.
+Medicamento.
+Dosis.
+Inicio.
+Finalización.
+Responsable.
+Resultado.
+Costo.
+
+Incluir:
+
+Desparasitación.
+Vitaminización.
+Suplementación.
+Control de ectoparásitos.
+Cirugías.
+Lesiones.
+Prevención.
+Exámenes.
+Certificados.
+
+Generar alertas sanitarias.
+
+12. REPRODUCCIÓN
+
+Registrar:
+
+Hembras reproductoras.
+Machos.
+Padre.
+Madre.
+Montas.
+Inseminaciones.
+Toro.
+Diagnóstico de preñez.
+Fecha probable de parto.
+Parto.
+Crías.
+Abortos.
+Celos.
+
+Indicadores:
+
+Preñez.
+Natalidad.
+Intervalo entre partos.
+Días abiertos.
+Fertilidad.
+Crías por vaca.
+Indicadores de reproductores.
+13. NACIMIENTOS Y LEVANTE
+
+Al registrar un nacimiento:
+
+Crear animal automáticamente.
+Generar ID.
+Asignar arete.
+Registrar fecha/hora.
+Asociar madre.
+Asociar padre.
+Registrar sexo.
+Registrar peso.
+Registrar parto.
+Adjuntar fotografía.
+Actualizar historia reproductiva de la madre.
+
+Controlar:
+
+Lactancia.
+Destete.
+Peso al destete.
+Edad.
+Desarrollo.
+Mortalidad.
+Levante.
+14. ALIMENTACIÓN Y NUTRICIÓN
+
+Administrar:
+
+Concentrados.
+Sales.
+Suplementos.
+Pastos.
+Forrajes.
+Silos.
+Consumos.
+Cantidades.
+Costos.
+Proveedores.
+
+Planes nutricionales por:
+
+Edad.
+Peso.
+Categoría.
+Etapa productiva.
+Potrero.
+Lote.
+
+Calcular costos por:
+
+Animal.
+Lote.
+Periodo.
+15. POTREROS Y LOTES
+
+Registrar:
+
+Nombre.
+Código.
+Área.
+Tipo de pasto.
+Capacidad.
+Estado.
+Ocupación.
+Salida.
+Descanso.
+Cantidad de animales.
+Observaciones.
+
+Mantener historia de movimientos entre potreros.
+
+Generar alertas por sobrecarga.
+
+16. INVENTARIO GANADERO
+
+Clasificar automáticamente:
+
+Machos.
+Hembras.
+Terneros.
+Terneras.
+Novillas.
+Novillos.
+Vacas.
+Toros.
+Reproductores.
+Engorde.
+Cuarentena.
+
+Registrar movimientos:
+
+Compras.
+Nacimientos.
+Ventas.
+Muertes.
+Traslados.
+Sacrificios.
+Ajustes.
+
+Todo movimiento debe quedar auditado.
+
+17. COMPRAS Y VENTAS
+Compras
+
+Registrar:
+
+Proveedor.
+Fecha.
+Animal.
+Peso.
+Precio/kg.
+Total.
+Transporte.
+Otros costos.
+Documentos.
+Ventas
+Cliente.
+Fecha.
+Animal/lote.
+Peso.
+Precio/kg.
+Total.
+Gastos.
+Utilidad.
+Soportes.
+
+Mantener trazabilidad desde adquisición/nacimiento hasta salida.
+
+18. FINANZAS
+
+Registrar:
+
+Veterinaria.
+Alimentación.
+Mano de obra.
+Mantenimiento.
+Transporte.
+Animales.
+Insumos.
+Vacunas.
+Medicamentos.
+Otros gastos.
+Ingresos.
+
+Generar:
+
+Flujo de caja.
+Ingresos.
+Egresos.
+Rentabilidad por animal.
+Rentabilidad por lote.
+Costos de producción.
+Costo/kg.
+Costo de mantenimiento.
+Utilidad.
+19. GENÉTICA Y PEDIGRÍ
+
+Construir árbol genealógico incluyendo:
+
+Padre.
+Madre.
+Abuelos.
+Descendientes.
+Raza.
+Porcentaje racial.
+Características genéticas.
+
+Implementar validaciones para evitar relaciones genealógicas imposibles o inconsistentes.
+
+20. GEOLOCALIZACIÓN E IoT GANADERO
+
+Este será otro módulo prioritario.
+
+Implementar arquitectura LoRaWAN para una hacienda con más de 2.000 animales, preparada para escalar por lo menos a 5.000 dispositivos.
+
+20.1 Tipos de dispositivos
+A. Tag GPS/GNSS + LoRaWAN
+
+Para animales que requieran seguimiento individual.
+
+Debe poder transmitir:
+
+Coordenadas.
+Fecha/hora.
+Batería.
+Movimiento.
+Estado.
+Sensores disponibles.
+
+Cuando corresponda, soportar GNSS:
+
+GPS.
+Galileo.
+GLONASS.
+BeiDou.
+B. Tag LoRaWAN de bajo consumo
+
+Para animales que no requieren GPS permanente.
+
+Priorizar:
+
+Autonomía.
+Bajo consumo.
+Movimiento.
+Inactividad.
+Presencia.
+Batería.
+Telemetría disponible.
+
+Nunca asumir que LoRaWAN proporciona GPS.
+
+Si el tag no tiene GNSS, no presentar coordenadas GPS ficticias.
+
+C. Gateways LoRaWAN
+
+Distribuir estratégicamente en la hacienda.
+
+Considerar:
+
+Altura.
+Terreno.
+Vegetación.
+Obstáculos.
+Antenas.
+RSSI.
+SNR.
+Conectividad.
+Redundancia.
+
+No establecer arbitrariamente el número de gateways.
+
+La cantidad final debe depender de un estudio de cobertura/radiofrecuencia.
+
+Conectividad del gateway:
+
+Ethernet.
+Wi-Fi.
+Celular cuando corresponda.
+21. DIFERENCIACIÓN DE UBICACIONES
+
+El ERP debe diferenciar claramente:
+
+POSICIÓN GPS/GNSS
+
+Coordenada obtenida directamente por un dispositivo GNSS.
+
+UBICACIÓN ESTIMADA
+
+Ubicación inferida por infraestructura de comunicaciones cuando técnicamente sea posible.
+
+Debe indicar:
+
+Método.
+Fecha.
+Precisión estimada.
+Margen de error disponible.
+ÚLTIMA UBICACIÓN CONOCIDA
+
+Última posición válida recibida.
+
+Nunca presentar una posición antigua como si fuese actual.
+
+22. GESTIÓN DE TAGS
+
+Registrar por tag:
+
+ID.
+DevEUI.
+Identificador de radio.
+Número de serie.
+Marca.
+Modelo.
+Tipo.
+Tecnología.
+Firmware.
+Instalación.
+Activación.
+Estado.
+Batería.
+Última transmisión.
+Perfil de transmisión.
+
+Permitir:
+
+Asignar.
+Retirar.
+Reasignar.
+Consultar historial.
+Detectar duplicados.
+
+Un tag no podrá estar asignado simultáneamente a dos animales activos.
+
+23. MAPA INTERACTIVO
+
+Mostrar:
+
+Límites de la hacienda.
+Potreros.
+Corrales.
+Mangas.
+Bebederos.
+Comederos.
+Gateways.
+Animales.
+Geocercas.
+Zonas restringidas.
+
+Permitir:
+
+Dibujar polígonos.
+Medir distancias.
+Visualizar recorridos.
+Mostrar última ubicación.
+Ver historial.
+Filtrar animales.
+Buscar por arete.
+Buscar por código de barras.
+
+Utilizar PostgreSQL + PostGIS para gestión geoespacial.
+
+24. GEOCERCAS
+
+Detectar:
+
+Salida del potrero.
+Ingreso a otro potrero.
+Salida de la hacienda.
+Entrada a zona restringida.
+Permanencia excesiva.
+Concentraciones anormales.
+
+Evitar falsas alarmas mediante:
+
+Tolerancia geográfica.
+Permanencia mínima.
+Varias posiciones consecutivas.
+Control de precisión.
+Antirrebote de eventos.
+25. HISTORIAL GEOGRÁFICO
+
+Guardar:
+
+Animal.
+Tag.
+Latitud.
+Longitud.
+Altitud.
+Fecha/hora.
+Precisión.
+Tipo de ubicación.
+Batería.
+Gateway.
+RSSI.
+SNR.
+Potrero.
+Evento.
+
+Consultar por:
+
+Día.
+Semana.
+Mes.
+Intervalo personalizado.
+
+Incluir mapas de calor cuando existan datos suficientes.
+
+26. ACTIVIDAD DEL ANIMAL
+
+Cuando exista acelerómetro:
+
+Movimiento.
+Inactividad.
+Descanso.
+Desplazamiento.
+Actividad diaria.
+Cambios de patrón.
+
+Alertar sobre:
+
+Inactividad prolongada.
+Movimiento excesivo.
+Posible inmovilización.
+Cambios inusuales.
+
+Estos eventos son indicadores preventivos, no diagnósticos veterinarios.
+
+27. GESTIÓN DE GATEWAYS
+
+Registrar:
+
+ID.
+Nombre.
+Marca.
+Modelo.
+Serie.
+Coordenadas.
+Altura.
+IP.
+Backhaul.
+Estado.
+Instalación.
+Última comunicación.
+Métricas de señal.
+
+Dashboard:
+
+Gateways disponibles.
+Desconectados.
+Tags activos.
+Tags incomunicados.
+RSSI/SNR.
+Mensajes recibidos.
+Baterías.
+Cobertura estimada.
+28. SERVIDOR LoRaWAN
+
+Preparar integración con:
+
+ChirpStack.
+The Things Stack.
+Alternativas compatibles.
+
+Crear un servicio:
+
+LoRa Integration Service
+
+Responsabilidades:
+
+Recibir mensajes.
+Autenticar/validar dispositivo.
+Decodificar payload.
+Identificar tag.
+Asociar animal.
+Procesar datos.
+Guardar telemetría.
+Guardar posiciones.
+Actualizar ubicación.
+Procesar geocercas.
+Crear alertas.
+Actualizar dashboard.
+
+Interfaces:
+
+MQTT.
+Webhooks.
+REST.
+
+Utilizar procesamiento asíncrono/colas cuando sea necesario para soportar miles de dispositivos.
+
+29. PERFILES DE TRANSMISIÓN IoT
+
+No asumir GPS transmitido continuamente.
+
+Permitir perfiles según:
+
+Tipo de animal.
+Categoría.
+Nivel de riesgo.
+Estado sanitario.
+Potrero.
+Batería.
+Necesidad de seguimiento.
+
+Priorizar equilibrio entre:
+
+frecuencia de actualización ↔ autonomía ↔ cobertura ↔ capacidad de red
+
+30. SEGURIDAD LoRaWAN/IoT
+
+Implementar:
+
+Autenticación.
+Gestión segura de claves.
+OTAA cuando sea compatible.
+Protección de credenciales.
+Validación de mensajes.
+Dispositivos autorizados.
+Auditoría.
+Protección ante mensajes repetidos.
+Control de acceso.
+
+No almacenar claves raíz en texto plano.
+
+31. MODO OFFLINE
+
+Crear PWA.
+
+Permitir sin Internet:
+
+Consultar información previamente sincronizada.
+Registrar eventos.
+Registrar pesajes.
+Operar báscula local.
+Almacenar operaciones pendientes.
+Sincronizar posteriormente.
+
+Implementar:
+
+IDs únicos.
+Prevención de duplicados.
+Resolución de conflictos.
+Estado de sincronización.
+Reintentos controlados.
+32. DASHBOARD
+
+Dashboard principal con:
+
+Total de animales.
+Machos/hembras.
+Nacimientos.
+Muertes.
+Compras.
+Ventas.
+Peso promedio.
+GDP.
+Enfermos.
+Vacunas pendientes.
+Preñadas.
+Próximos partos.
+Gastos.
+Ingresos.
+Rentabilidad.
+Alertas.
+
+Dashboard IoT:
+
+Tags totales.
+Tags activos.
+Tags incomunicados.
+Animales localizados.
+Animales fuera de potrero.
+Gateways.
+Baterías.
+Alertas.
+Cobertura estimada.
+33. NOTIFICACIONES
+
+Alertas por:
+
+Vacunas.
+Desparasitación.
+Partos.
+Tratamientos.
+Medicamentos.
+Inventario.
+Pesajes.
+Geocercas.
+Tag sin comunicación.
+Batería baja.
+Gateway caído.
+Movimiento anormal.
+Animal inmóvil.
+Posición desactualizada.
+
+Permitir:
+
+Prioridad.
+Destinatarios.
+Horarios.
+Escalamiento.
+Confirmación.
+Histórico.
+
+Preparar integraciones futuras con correo y WhatsApp mediante proveedores autorizados.
+
+34. DOCUMENTOS
+
+Permitir adjuntar:
+
+Fotografías.
+Certificados.
+Facturas.
+Compras.
+Ventas.
+Laboratorios.
+Historia veterinaria.
+Movilización.
+
+Cada documento deberá guardar relación con su entidad correspondiente.
+
+35. CONFIGURACIÓN DE HACIENDA
+
+Configurar:
+
+Nombre.
+Logo.
+Propietario.
+Identificación tributaria.
+Ubicación.
+Moneda.
+Unidades.
+Razas.
+Categorías.
+Potreros.
+Alertas.
+Tipos de eventos.
+Dispositivos.
+
+Valores iniciales:
+
+Peso: kg.
+Moneda: COP.
+
+Pero deben ser configurables.
+
+36. UI/UX
+
+Diseño:
+
+Profesional.
+Moderno.
+Limpio.
+Responsive.
+Adecuado para exteriores/campo.
+
+Colores:
+
+Verde oscuro.
+Blanco.
+Tierra.
+Gris neutro.
+
+Incluir:
+
+Sidebar.
+Dashboard.
+Tarjetas.
+Tablas.
+Filtros.
+Formularios.
+Buscador.
+Gráficos.
+Mapas.
+Estados visuales.
+
+En pesaje priorizar:
+
+Botones grandes.
+Peso grande.
+Animal claramente identificado.
+Indicador de báscula.
+Confirmación sencilla.
+37. BASE DE DATOS
+
+Diseñar modelo relacional normalizado.
+
+Entidades mínimas:
+
+Usuarios.
+Roles.
+Permisos.
+Sesiones.
+Fincas.
+Animales.
+Razas.
+Identificaciones.
+Pedigrí.
+Nacimientos.
+Pesajes.
+Básculas.
+Dispositivos.
+Tags.
+Asignaciones de tags.
+Gateways.
+Telemetría.
+Posiciones.
+Geocercas.
+Alertas.
+Vacunas.
+Enfermedades.
+Tratamientos.
+Medicamentos.
+Reproducción.
+Partos.
+Potreros.
+Movimientos.
+Alimentación.
+Inventarios.
+Compras.
+Ventas.
+Gastos.
+Ingresos.
+Documentos.
+Notificaciones.
+Auditoría.
+
+Implementar:
+
+PK.
+FK.
+Restricciones.
+Índices.
+Índices espaciales PostGIS.
+Índices temporales.
+Particionamiento de posiciones históricas cuando corresponda.
+38. CIBERSEGURIDAD
+
+Implementar como mínimo:
+
+HTTPS.
+Hash seguro de contraseñas.
+JWT seguro.
+Refresh tokens.
+Validación estricta.
+Autorización Backend.
+Prevención de SQL Injection.
+Protección XSS.
+CSRF cuando aplique.
+Rate limiting.
+Gestión segura de secretos.
+Auditoría.
+Copias de seguridad.
+Restauración.
+Protección de archivos.
+Transacciones.
+Manejo seguro de errores.
+
+Los errores enviados al frontend no deberán revelar:
+
+Stack traces.
+Credenciales.
+Consultas internas.
+Secretos.
+Información sensible.
+39. AUDITORÍA
+
+Registrar como mínimo:
+
+Usuario.
+Acción.
+Entidad.
+ID afectado.
+Fecha/hora.
+Valor anterior cuando corresponda.
+Valor nuevo cuando corresponda.
+Resultado.
+Origen/IP cuando sea adecuado.
+
+Las operaciones críticas no deben eliminarse sin trazabilidad.
+
+40. REPORTES
+
+Permitir filtros por:
+
+Fecha.
+Animal.
+Raza.
+Sexo.
+Categoría.
+Potrero.
+Lote.
+Estado.
+Responsable.
+
+Exportar a:
+
+Excel.
+PDF.
+41. BACKUP Y RECUPERACIÓN
+
+Implementar:
+
+Backups automáticos.
+Retención configurable.
+Verificación.
+Restauración documentada.
+
+Considerar:
+
+PostgreSQL.
+PostGIS.
+Documentos.
+Configuraciones.
+Datos IoT relevantes.
+42. PRUEBAS
+
+Implementar:
+
+Unitarias.
+Integración.
+E2E.
+API.
+Validaciones.
+Seguridad.
+Offline.
+Sincronización.
+Local Bridge.
+Pesaje.
+IoT.
+
+Crear simuladores para:
+
+Báscula
+
+Debe generar pesos simulados y claramente identificados.
+
+LoRaWAN
+
+Simular:
+
+Miles de tags.
+Coordenadas.
+Movimiento.
+Baterías.
+Telemetría.
+Pérdida de conexión.
+Cambio de potrero.
+Alertas.
+
+Nunca presentar datos simulados como datos físicos reales.
+
+43. ESCALABILIDAD
+
+La arquitectura debe considerar inicialmente:
+
+Más de 2.000 animales.
+Más de 2.000 tags.
+Varios gateways.
+Históricos de posiciones.
+Crecimiento mínimo objetivo a 5.000 dispositivos.
+
+Preparar:
+
+Índices.
+Colas.
+Caché cuando sea necesario.
+Procesamiento asíncrono.
+Particionamiento.
+Retención.
+Paginación.
+Consultas geoespaciales optimizadas.
+44. ENTREGABLES
+
+Entregar:
+
+Arquitectura.
+Diagrama de componentes.
+Modelo entidad-relación.
+Arquitectura IoT.
+Arquitectura LoRaWAN.
+Modelo geoespacial.
+Estructura completa de carpetas.
+Backend.
+Frontend.
+Base de datos.
+Migraciones.
+Seeds.
+Autenticación.
+RBAC.
+Swagger/OpenAPI.
+Local Bridge.
+Adaptador de báscula.
+Lectura de códigos.
+LoRa Integration Service.
+Integración MQTT/Webhook.
+Gestión de tags.
+Gateways.
+Mapa.
+Geocercas.
+Alertas.
+PWA.
+Sincronización.
+Dashboard.
+Reportes.
+Pruebas.
+Simulador de báscula.
+Simulador IoT.
+Dockerfiles.
+Docker Compose.
+.env.example.
+Manual de instalación.
+Manual de administración.
+Manual de usuario.
+Manual de conexión de básculas.
+Manual LoRaWAN.
+Procedimiento de backup.
+Procedimiento de restauración.
+Pruebas de carga.
+45. METODOLOGÍA DE DESARROLLO
+
+Dividir obligatoriamente el proyecto en fases.
+
+FASE 1
+
+Arquitectura, repositorio, Docker, PostgreSQL/PostGIS, backend, seguridad y autenticación.
+
+FASE 2
+
+Animales, identificación, usuarios, roles e inventario.
+
+FASE 3
+
+Báscula, códigos de barras y Local Bridge.
+
+FASE 4
+
+Pesajes, crecimiento y reportes relacionados.
+
+FASE 5
+
+Veterinaria y salud.
+
+FASE 6
+
+Reproducción, nacimientos y genética.
+
+FASE 7
+
+Alimentación, potreros y movimientos.
+
+FASE 8
+
+Compras, ventas y finanzas.
+
+FASE 9
+
+LoRaWAN, tags y gateways.
+
+FASE 10
+
+GPS/GNSS, mapas, PostGIS y geocercas.
+
+FASE 11
+
+Dashboard, notificaciones, reportes y analítica.
+
+FASE 12
+
+Offline/PWA, sincronización, hardening de seguridad, pruebas de carga, documentación y despliegue.
+
+Cada fase debe quedar:
+
+Funcional.
+Integrada.
+Probada.
+Documentada.
+Ejecutable.
+46. REGLAS OBLIGATORIAS PARA LA IA DESARROLLADORA
+No inventar capacidades del hardware.
+No asumir protocolos de una báscula que no hayan sido especificados.
+No asumir que LoRa proporciona GPS.
+No asumir que LoRaWAN determina automáticamente la coordenada exacta.
+No inventar posiciones geográficas.
+Diferenciar datos simulados y reales.
+No afirmar que una integración física fue validada si no existe acceso al hardware.
+Crear interfaces/adaptadores para hardware todavía desconocido.
+No eliminar módulos para simplificar el desarrollo.
+No reemplazar funcionalidad solicitada por mockups.
+No entregar botones sin lógica.
+No crear endpoints ficticios.
+No utilizar datos hardcodeados como solución final.
+No almacenar secretos directamente en código fuente.
+No sobrescribir datos históricos.
+Mantener compatibilidad offline donde se haya solicitado.
+Implementar migraciones de base de datos.
+Utilizar manejo centralizado de errores.
+Registrar auditoría en operaciones críticas.
+Mantener documentación actualizada durante el desarrollo.
+47. REGLAS PARA GENERACIÓN DE CÓDIGO
+
+Cuando desarrolles código:
+
+Indica la ruta exacta del archivo.
+Entrega archivos completos cuando sean nuevos.
+Si modificas un archivo existente, analiza primero su contenido actual.
+No elimines funciones existentes necesarias para otros módulos.
+Mantén coherencia entre frontend, backend y base de datos.
+No referencies dependencias que no estén instaladas.
+Mantén .env.example actualizado.
+Mantén las migraciones sincronizadas.
+Maneja errores.
+Aplica validación de entradas.
+Implementa logging adecuado.
+Agrega las pruebas correspondientes.
+Verifica compilación antes de declarar una fase terminada.
+
+Después de cada fase:
+
+Compilar.
+Ejecutar pruebas.
+Corregir errores.
+Validar migraciones.
+Validar Docker.
+Validar frontend.
+Validar backend.
+Informar qué quedó completamente funcional.
+Identificar claramente cualquier elemento pendiente de hardware físico.
+48. CRITERIO DE TERMINACIÓN
+
+No declarar el proyecto terminado simplemente porque existan pantallas.
+
+El sistema se considera terminado cuando:
+
+Frontend y backend están integrados.
+La base de datos está funcional.
+Las migraciones funcionan.
+La autenticación funciona.
+Los permisos funcionan.
+Los módulos principales tienen persistencia.
+La trazabilidad funciona.
+Los pesajes funcionan mediante simulador y queda preparado el adaptador físico.
+El sistema IoT funciona mediante simulador y queda preparada la integración física.
+Los mapas y PostGIS funcionan.
+Las alertas funcionan.
+Los reportes funcionan.
+El modo offline definido funciona.
+Docker permite levantar la solución.
+Las pruebas críticas pasan.
+Existen respaldos y procedimiento de restauración.
+Existe documentación suficiente para instalar y operar la plataforma.
+49. INSTRUCCIÓN INICIAL A LA IA
+
+No comiences a generar código inmediatamente.
+
+Primero analiza completamente estos requerimientos y presenta:
+
+Arquitectura propuesta.
+Diagrama lógico de componentes.
+Flujo de datos.
+Arquitectura Frontend.
+Arquitectura Backend.
+Arquitectura PostgreSQL/PostGIS.
+Modelo entidad-relación.
+Arquitectura de integración de la báscula.
+Arquitectura del Local Bridge.
+Arquitectura LoRaWAN.
+Arquitectura ChirpStack/MQTT/API.
+Arquitectura de tags GPS/GNSS.
+Arquitectura de tags LoRaWAN de bajo consumo.
+Diseño de gateways.
+Estrategia offline.
+Modelo de seguridad.
+Estructura de carpetas.
+Módulos y dependencias entre ellos.
+Estrategia de pruebas.
+Plan de desarrollo por fases.
+
+Identifica también cualquier requisito que:
+
+Dependa de una marca/modelo específico de hardware.
+No pueda comprobarse sin hardware físico.
+Requiera información adicional antes de su integración definitiva.
+
+Una vez establecida y documentada la arquitectura, comienza la implementación de la FASE 1.
+
+No reduzcas el alcance para facilitar el desarrollo.
+
+Si el proyecto excede el tamaño de una única entrega, continúa de forma incremental manteniendo la misma arquitectura, modelo de datos y estructura del proyecto.
+
+El resultado final debe ser una plataforma empresarial de administración ganadera capaz de instalarse en infraestructura real, operar localmente en la hacienda y quedar preparada para integrar básculas, lectores, tags LoRaWAN, GPS/GNSS y gateways físicos sin depender obligatoriamente de servicios cloud.

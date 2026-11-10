@@ -329,6 +329,32 @@ curl -X PUT \
   }'
 ```
 
+### 7.0 Limitación conocida de la cuenta
+
+Este repositorio es **privado** y la cuenta es de plan gratuito. GitHub **no permite protección de ramas en
+repositorios privados** sin plan Pro/Team (responde `403 Upgrade to GitHub Pro or make this repository
+public`). Opciones, en orden de preferencia:
+
+1. **Pasar a plan Pro/Team** y ejecutar la configuración (recomendado si el repositorio seguirá privado).
+2. **Hacer público el repositorio** (cambia la exposición del material: revisar antes con el titular).
+3. **Operar sin protección de ramas**, con disciplina de PR y CI en verde como norma social (estado actual).
+
+Mientras la protección no esté activa, la regla del proyecto sigue vigente por acuerdo: **nadie empuja
+directo a `main`**, todo entra por PR hacia `develop`.
+
+Las etiquetas y los hitos sí se pueden crear en cualquier plan, pero el token debe tener permiso
+**Issues: Read and write**. El script de configuración los crea de forma idempotente:
+
+```bash
+# Un solo comando para dejar el repositorio configurado
+GITHUB_TOKEN=<token-con-issues-y-administration> node scripts/dev/setup-github.mjs --all
+
+# O por partes
+node scripts/dev/setup-github.mjs --labels --milestones
+node scripts/dev/setup-github.mjs --topics
+node scripts/dev/setup-github.mjs --protection   # requiere Pro/Team o repo público
+```
+
 ### 7.1 Etiquetas (labels)
 
 | Etiqueta | Color | Uso |

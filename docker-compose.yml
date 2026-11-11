@@ -36,7 +36,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-hacienda}
       POSTGRES_USER: ${POSTGRES_SUPERUSER:-hacienda_owner}
       POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:-cambiar_en_produccion}
-      POSTGRES_INITDB_ARGS: "--data-checksums"
+      POSTGRES_INITDB_ARGS: "--data-checksums --encoding=UTF8 --locale=C"
       TZ: ${TZ:-America/Bogota}
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -142,13 +142,16 @@ services:
       - internal
     logging: *default-logging
 
-  # ── Aplicación (Fase 1+) ────────────────────────────────────────────────────
+  # ── Aplicación ──────────────────────────────────────────────────────────────
+  #  El worker de trabajos asíncronos llega en la Fase 11 y el servicio de
+  #  ingesta LoRaWAN en la Fase 9: se agregan aquí cuando exista su código, no
+  #  antes (un servicio que no puede construirse rompe `--profile app`).
   api:
     <<: *default-restart
     profiles: ["app"]
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     container_name: hg-api
     depends_on:
       postgres:
@@ -159,7 +162,7 @@ services:
         condition: service_started
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://hacienda_app:cambiar_en_produccion@postgres:5432/hacienda}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://app_rw:cambiar_en_produccion@postgres:5432/hacienda?schema=app}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
       S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}
@@ -168,6 +171,8 @@ services:
       JWT_AUDIENCE: ${JWT_AUDIENCE:-hacienda-web}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       TZ: ${TZ:-America/Bogota}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+      RUN_SEED: ${RUN_SEED:-false}
     expose:
       - "3001"
     healthcheck:
@@ -180,68 +185,23 @@ services:
       - internal
     logging: *default-logging
 
-  worker:
-    <<: *default-restart
-    profiles: ["app"]
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    container_name: hg-worker
-    command: ["node", "dist/worker.js"]
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://hacienda_app:cambiar_en_produccion@postgres:5432/hacienda}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      TZ: ${TZ:-America/Bogota}
-    networks:
-      - internal
-    logging: *default-logging
-
   web:
     <<: *default-restart
     profiles: ["app"]
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
     container_name: hg-web
     depends_on:
       api:
         condition: service_started
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      NEXT_PUBLIC_API_URL: ${API_URL:-http://localhost:3001}
+      API_URL: http://api:3001
+      NEXT_PUBLIC_API_URL: /api/v1
       TZ: ${TZ:-America/Bogota}
     expose:
       - "3000"
-    networks:
-      - internal
-    logging: *default-logging
-
-  lora-service:
-    <<: *default-restart
-    profiles: ["app", "lorawan"]
-    build:
-      context: ./apps/lora-service
-      dockerfile: Dockerfile
-    container_name: hg-lora
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://hacienda_app:cambiar_en_produccion@postgres:5432/hacienda}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      LORA_MQTT_URL: ${LORA_MQTT_URL:-mqtt://mosquitto:1883}
-      LORA_WEBHOOK_SECRET: ${LORA_WEBHOOK_SECRET:-cambiar_en_produccion}
-      TZ: ${TZ:-America/Bogota}
     networks:
       - internal
     logging: *default-logging

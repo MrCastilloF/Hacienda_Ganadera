@@ -13,7 +13,7 @@
  * Salida: código 0 si todo está bien, 1 si hay errores.
  */
 
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, extname, relative, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 

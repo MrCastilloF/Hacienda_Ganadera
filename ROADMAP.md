@@ -34,7 +34,7 @@ valida estructura, enlaces y ausencia de secretos.
 
 ---
 
-## F1 · Arquitectura implementada, Docker, seguridad y autenticación
+## F1 · Plataforma base, Docker, seguridad y autenticación ✅
 
 | # | Entregable |
 |---|---|
@@ -48,8 +48,9 @@ valida estructura, enlaces y ausencia de secretos.
 | 8 | Pruebas: matriz de autorización, inmutabilidad, cadena de auditoría |
 | 9 | `make verify` verde y release `v0.1.0` |
 
-**Riesgo principal:** que la inmutabilidad se implemente solo en la UI. Mitigación: triggers y roles desde la
-primera migración, con prueba que lo demuestre.
+**Estado: entregada.** Evidencia: migraciones aplicadas desde cero, 22 pruebas de integración contra
+PostgreSQL real (incluye detección de manipulación de la auditoría y privilegios del rol `app_rw`), web
+operativa con ingreso real y OpenAPI con 19 rutas exportado en `docs/api/openapi.json`.
 
 ---
 

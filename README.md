@@ -11,9 +11,10 @@ historia **única, permanente e inalterable** desde su nacimiento o ingreso hast
 Diseñada para operar en **infraestructura local de la hacienda** (un servidor, un `docker compose up`),
 preparada para despliegue híbrido o en nube, y usable desde computador, tableta y celular.
 
-> **Estado actual: Fase 0 — especificación, arquitectura y repositorio base.**
-> En esta etapa **no hay código de aplicación**, por decisión explícita del alcance ([`docs/07`](docs/07-cierre-y-confirmaciones.md)).
-> Lo que existe es el contrato: qué se construye, con qué reglas y cómo se demuestra que funciona.
+> **Estado actual: Fase 1 — plataforma base funcionando.**
+> Ya se puede arrancar, iniciar sesión y operar: API con autenticación (JWT RS256 + refresh rotativo +
+> MFA TOTP), RBAC con alcance, auditoría encadenada verificable, web operativa y 37 pruebas automatizadas
+> en verde. Los módulos de animales y pesajes llegan en las fases 2–4.
 
 ---
 
@@ -46,6 +47,46 @@ tienen:
 Lista completa en [`docs/01` §3](docs/01-especificacion-corregida.md).
 
 ---
+
+## Puesta en marcha
+
+### Opción A — Docker (recomendado en la hacienda)
+
+```bash
+cp .env.example .env          # complete las contraseñas
+docker compose up -d postgres redis minio proxy
+docker compose --profile app up -d --build
+
+# Primera vez: catálogos, roles y usuario administrador
+docker compose exec api env RUN_SEED=true node /app/scripts/dev/lib/seed.mjs
+```
+
+- Web: `http://localhost` (el proxy enruta a la web y a la API)
+- API y Swagger: `http://localhost/api/docs`
+- El usuario administrador y su contraseña los imprime el seed una sola vez.
+
+### Opción B — sin Docker (desarrollo en cualquier equipo)
+
+```bash
+pnpm install
+
+# 1. Base de datos embebida (descarga un PostgreSQL temporal, sin instalar nada)
+pnpm db:local --persist        # en otra terminal: aplica migraciones y siembra datos
+
+# 2. API + web
+pnpm dev
+```
+
+- Web: `http://127.0.0.1:3000`
+- API: `http://127.0.0.1:3100` · Swagger en `/api/docs`
+
+### Verificación
+
+```bash
+pnpm verify        # documentación, secretos, lint, tipos, unitarias, integración y OpenAPI
+pnpm test:e2e      # prueba de humo contra los servicios en marcha
+pnpm audit:verify  # integridad de la cadena de auditoría
+```
 
 ## Mapa de la documentación
 
@@ -111,8 +152,8 @@ Detalle en [`ROADMAP.md`](ROADMAP.md).
 | Fase | Alcance | Estado |
 |---|---|---|
 | **F0** | Validación, especificación v2, arquitectura, repositorio y CI | ✅ entregado |
-| **F1** | Arquitectura implementada, Docker, PostGIS, backend, seguridad y autenticación | ⏳ siguiente |
-| **F2** | Animales, identificación, usuarios, roles e inventario | pendiente |
+| **F1** | Docker, PostgreSQL, backend, seguridad, autenticación, RBAC y auditoría encadenada | ✅ entregado |
+| **F2** | Animales, identificación, usuarios, roles e inventario | ⏳ siguiente |
 | **F3** | Báscula, códigos de barras y Local Bridge | pendiente |
 | **F4** | Pesajes, crecimiento y reportes | pendiente |
 | **F5** | Veterinaria y salud | pendiente |

@@ -1,0 +1,463 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Sonda de vida: responde si el proceso está en pie",
+        "tags": [
+          "salud"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "health_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Sonda de disponibilidad: comprueba la dependencia de datos",
+        "tags": [
+          "salud"
+        ]
+      }
+    },
+    "/api/v1/auditoria": {
+      "get": {
+        "operationId": "audit_list",
+        "parameters": [
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista los eventos de auditoría (más recientes primero)",
+        "tags": [
+          "auditoría"
+        ]
+      }
+    },
+    "/api/v1/auditoria/estadisticas": {
+      "get": {
+        "operationId": "audit_stats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Total de eventos y fecha del último registro",
+        "tags": [
+          "auditoría"
+        ]
+      }
+    },
+    "/api/v1/auditoria/verificar": {
+      "get": {
+        "description": "Recalcula el hash de cada evento y comprueba el encadenamiento. Una ruptura es un incidente de seguridad, no un defecto funcional.",
+        "operationId": "audit_verify",
+        "parameters": [
+          {
+            "name": "hasta",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "desde",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verifica la cadena de hashes. Sin rupturas ⇒ respuesta íntegra",
+        "tags": [
+          "auditoría"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "auth_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Inicia sesión y devuelve un token de acceso y uno de refresco",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "auth_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Rota el token de refresco y emite un nuevo par de tokens",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "auth_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Revoca el token de refresco (idempotente)",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "auth_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Usuario autenticado con roles, alcance, fincas y permisos",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/password": {
+      "post": {
+        "operationId": "auth_cambiarPassword",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia la contraseña y revoca las sesiones activas",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/mfa/iniciar": {
+      "post": {
+        "operationId": "auth_iniciarMfa",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Genera un secreto TOTP y la URL para el autenticador",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/mfa/confirmar": {
+      "post": {
+        "operationId": "auth_confirmarMfa",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activa el segundo factor tras verificar un código",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/mfa/deshabilitar": {
+      "post": {
+        "operationId": "auth_deshabilitarMfa",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Desactiva el segundo factor verificando un código vigente",
+        "tags": [
+          "autenticación"
+        ]
+      }
+    },
+    "/api/v1/usuarios": {
+      "get": {
+        "operationId": "usuarios_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista usuarios con sus roles y fincas",
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "post": {
+        "operationId": "usuarios_crear",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crea un usuario y le asigna roles",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/usuarios/{id}": {
+      "get": {
+        "operationId": "usuarios_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle de un usuario",
+        "tags": [
+          "usuarios"
+        ]
+      },
+      "patch": {
+        "operationId": "usuarios_actualizar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualiza nombre, cargo o estado del usuario",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/usuarios/{id}/roles": {
+      "put": {
+        "operationId": "usuarios_roles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reemplaza los roles del usuario e invalida su caché de permisos",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/usuarios/{id}/reset-password": {
+      "post": {
+        "operationId": "usuarios_resetPassword",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Restablece la contraseña y revoca las sesiones del usuario",
+        "tags": [
+          "usuarios"
+        ]
+      }
+    },
+    "/api/v1/fincas": {
+      "get": {
+        "operationId": "fincas_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fincas a las que el usuario tiene acceso",
+        "tags": [
+          "fincas"
+        ]
+      }
+    },
+    "/api/v1/fincas/{id}": {
+      "get": {
+        "operationId": "fincas_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle de una finca dentro del alcance del usuario",
+        "tags": [
+          "fincas"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Hacienda Ganadera — API",
+    "description": "API de la plataforma de administración, trazabilidad y monitoreo de una hacienda ganadera.\n\n**Autenticación**: `Bearer <accessToken>` (JWT RS256, 15 min). El refresco es rotativo y de un solo uso.\n\n**Errores**: toda respuesta de error tiene la forma `{ error: { code, message, details?, requestId } }`.\nEl `requestId` permite correlacionar con los logs y con la auditoría.\n\n**Auditoría**: toda operación que muta estado queda registrada en una cadena de hashes verificable\nmediante `GET /api/v1/auditoria/verificar`.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "autenticación",
+      "description": "Inicio de sesión, refresco, segundo factor y contraseña"
+    },
+    {
+      "name": "usuarios",
+      "description": "Administración de usuarios y roles"
+    },
+    {
+      "name": "fincas",
+      "description": "Predios dentro del alcance del usuario"
+    },
+    {
+      "name": "auditoría",
+      "description": "Eventos de auditoría y verificación de la cadena de hashes"
+    },
+    {
+      "name": "salud",
+      "description": "Sondas de vida y disponibilidad"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Token de acceso"
+      }
+    },
+    "schemas": {}
+  }
+}

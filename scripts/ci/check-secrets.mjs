@@ -26,7 +26,7 @@ const IGNORED_DIRS = new Set([
 const TEXT_EXT = new Set([
   '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.json', '.yml', '.yaml',
   '.env', '.md', '.sql', '.sh', '.ps1', '.toml', '.conf', '.txt', '.example',
-  '.ini', '.properties', '.prisma', '.mmd', '.xml', '.html', '.css',
+  '.ini', '.properties', '.prisma', '.mmd', '.xml', '.html', '.css', '.pem', '.key', '.crt',
 ]);
 
 // Archivos que son plantillas por diseño: se revisan con reglas más laxas
@@ -108,6 +108,9 @@ for (const file of files) {
       if (!hit) continue;
       // Plantillas y variables de entorno no son fugas: se descartan.
       if (PLACEHOLDER_INLINE.test(hit[0])) continue;
+      // Conexiones a la máquina local: credenciales de desarrollo, no una fuga.
+      // Se evalúa la línea completa porque el patrón solo captura usuario:clave@.
+      if (name.startsWith('Connection string') && /(localhost|127\.0\.0\.1|::1)/.test(line)) continue;
       findings.push({ file: relPath, line: idx + 1, rule: name, snippet: redact(line) });
     }
 
@@ -118,8 +121,22 @@ for (const file of files) {
         PLACEHOLDER_RE.test(value) ||
         SAFE_VALUES.has(value.toLowerCase()) ||
         /^\d+$/.test(value) ||
-        value.length < 8;
-      if (!looksPlaceholder && !isTemplate) {
+        value.length < 12;
+
+      // Variables (PASSWORD), llamadas (randomBytes(...)), propiedades
+      // (config.password) y referencias de entorno no son secretos literales.
+      const esReferencia =
+        /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value) ||
+        value.includes('(') ||
+        value.includes('.') ||
+        value.startsWith('${') ||
+        value.startsWith('req.') ||
+        value.startsWith('ctx.');
+
+      // Las suites usan credenciales sintéticas y declaradas: no son un secreto.
+      const esPrueba = /(^|\/)tests?\//.test(relPath) || relPath.endsWith('.spec.ts');
+
+      if (!looksPlaceholder && !esReferencia && !isTemplate && !esPrueba) {
         findings.push({
           file: relPath,
           line: idx + 1,

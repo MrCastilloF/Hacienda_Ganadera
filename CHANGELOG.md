@@ -4,14 +4,43 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.1.0] — 2026-11-11 · Fase 1
+
+### Agregado
+- **Monorepo pnpm** con TypeScript estricto: `apps/api` (NestJS + Fastify), `apps/web` (Next.js),
+  scripts de operación y CI.
+- **Migraciones SQL** (fuente de verdad del esquema): extensiones, esquema `app`, roles de base de datos
+  con privilegios mínimos, tablas de seguridad, auditoría encadenada y preparación de outbox/idempotencia.
+- **Auditoría encadenada N3**: `app.audit_append` con lock de asesoramiento, hash SHA-256 determinista,
+  `app.audit_verify` para detectar alteraciones, triggers y `REVOKE` sobre `audit_log` y `evento_dominio`.
+- **Autenticación**: JWT RS256 (15 min), refresh opaco rotativo con detección de reutilización y revocación
+  de familia, Argon2id, bloqueo por intentos, MFA TOTP (RFC 6238) implementado sin dependencias externas.
+- **RBAC con alcance** (global/finca/lote/propio), `deny-by-default` y auditoría de los accesos denegados.
+- **API**: usuarios, fincas, auditoría (listado y verificación), salud; OpenAPI 3.1 generado (19 rutas).
+- **Web operativa**: ingreso con Server Actions y cookies HttpOnly, panel con permisos y fincas, y visor
+  de auditoría con el estado de la cadena.
+- **Pruebas**: 15 unitarias + 22 de integración contra PostgreSQL real (autenticación, RBAC, inmutabilidad,
+  detección de manipulación, privilegios del rol de aplicación).
+- **Operación**: `pnpm verify`, `pnpm test:e2e`, `pnpm audit:verify`, `pnpm db:local` (PostgreSQL embebido
+  sin Docker), Dockerfiles de API y web con usuario sin privilegios y migración al arrancar.
+
+### Corregido (defectos encontrados durante la propia implementación)
+- Las extensiones se instalaban en el esquema `app` y `digest()` no se resolvía: ahora van a `public` y las
+  funciones fijan `search_path`.
+- El seed comparaba una función con `null` y dejaba a `superadmin` **sin permisos**; detectado al verificar
+  que el token llevaba 0 permisos.
+- Prisma no deserializa el tipo compuesto `audit_log`: la función se proyecta como `(…).hash`.
+- Los guards declarados con `APP_GUARD` se instanciaban en el módulo equivocado: se registran desde el
+  contenedor en `bootstrap`, con una sola pila compartida por pruebas y producción.
+- El runner de pruebas (esbuild) no emite metadatos de decoradores: se cambió a SWC.
+- `output: standalone` de Next falla en Windows por enlaces simbólicos: se usa `next start`.
+
 ## [No publicado]
 
-### Por venir (Fase 1)
-- Monorepo pnpm con TypeScript estricto, lint y pruebas base.
-- `docker-compose.yml` con PostgreSQL 16 + PostGIS, Redis, MinIO y proxy TLS.
-- Migraciones iniciales, roles de base de datos y auditoría encadenada.
-- Autenticación (login, refresh rotativo, MFA), RBAC con alcance y OpenAPI.
-- Release `v0.1.0`.
+### Por venir (Fase 2)
+- Animales, identificación y numeración de aretes.
+- Inventario y categorías derivadas.
+- Importador de hato existente (CSV/XLSX).
 
 ## [0.1.0] — 2026-11-10 · Fase 0
 

@@ -13,6 +13,11 @@ ENV PNPM_HOME=/pnpm \
     PATH=/pnpm:$PATH \
     CI=true
 RUN corepack enable && corepack prepare pnpm@12.10.1 --activate
+# Prisma detecta la versión de OpenSSL en tiempo de generación: sin el binario
+# elige `debian-openssl-1.1.x` y el cliente falla al arrancar en el contenedor.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openssl \
+ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./

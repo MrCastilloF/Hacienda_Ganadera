@@ -11,6 +11,10 @@
 
 generator client {
   provider = "prisma-client-js"
+  // `native` cubre el equipo de desarrollo; el target explícito cubre la imagen
+  // Debian bookworm del contenedor, donde Prisma no puede detectar OpenSSL si el
+  // binario no está instalado en la etapa de build (provocaba un fallo real).
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {

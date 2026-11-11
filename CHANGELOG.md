@@ -4,6 +4,14 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.1.5] — 2026-11-11
+
+### Corregido
+- **El contenedor no encontraba el motor de Prisma**: Prisma detectaba `debian-openssl-1.1.x` al generar el
+  cliente porque la etapa de build no tenía el binario `openssl`, mientras la imagen final usa `3.0.x`.
+  Se declara `binaryTargets = ["native", "debian-openssl-3.0.x"]` y se instala `openssl` en el build.
+  De nuevo: lo detectó la prueba que arranca el contenedor, no la revisión de código.
+
 ## [0.1.4] — 2026-11-11
 
 ### Corregido

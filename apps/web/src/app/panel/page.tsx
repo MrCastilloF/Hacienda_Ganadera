@@ -47,6 +47,12 @@ export default async function PanelPage() {
           Crecimiento
         </Link>
         <Link
+          href="/salud"
+          className="rounded-lg bg-campo-900 px-4 py-2 font-semibold text-white hover:bg-campo-800"
+        >
+          Salud
+        </Link>
+        <Link
           href="/auditoria"
           className="rounded-lg border border-campo-500/40 px-4 py-2 font-semibold text-campo-900 hover:bg-campo-100"
         >

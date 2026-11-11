@@ -4,6 +4,18 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.5.3] — 2026-11-11
+
+### Agregado
+- **Pantalla de salud** (`/salud`): buscador de animal por arete, formulario de tratamiento con el catálogo
+  de referencia (el retiro se propone y queda editable), aviso de retiros por vencer en los próximos 15 días
+  y lista de tratamientos con su estado («retiro 24 d» / «puede venderse» / «anulado»).
+- Acceso a Salud desde el panel.
+
+### Nota
+- Los retiros que vencen fuera de la ventana consultada no aparecen en el aviso: es el comportamiento
+  esperado, no un fallo.
+
 ## [0.5.2] — 2026-11-11
 
 ### Agregado

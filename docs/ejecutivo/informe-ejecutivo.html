@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Informe Ejecutivo — Plataforma Hacienda Ganadera</title>
+<style>
+  @page { size: A4; margin: 2.2cm 2cm; }
+  body { font-family: 'Arial', sans-serif; font-size: 10.5pt; color: #1f2937; line-height: 1.45; }
+  h1 { font-size: 17pt; color: #2f4f2f; border-bottom: 2px solid #2f4f2f; padding-bottom: 4pt; margin-top: 22pt; page-break-after: avoid; }
+  h2 { font-size: 13pt; color: #3f5c34; margin-top: 16pt; page-break-after: avoid; }
+  h3 { font-size: 11pt; color: #4b5563; margin-top: 12pt; page-break-after: avoid; }
+  p { margin: 5pt 0; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0 12pt 0; font-size: 9.5pt; }
+  th { background: #eef2ea; color: #2f4f2f; text-align: left; padding: 5pt 6pt; border: 1px solid #cbd5c0; font-weight: bold; }
+  td { padding: 4pt 6pt; border: 1px solid #d9dfd2; vertical-align: top; }
+  .ok { color: #166534; font-weight: bold; }
+  .parcial { color: #92400e; font-weight: bold; }
+  .pendiente { color: #991b1b; font-weight: bold; }
+  .portada { text-align: center; margin-top: 130pt; page-break-after: always; }
+  .portada .marca { font-size: 10pt; letter-spacing: 3pt; color: #6b7280; text-transform: uppercase; }
+  .portada h1 { font-size: 26pt; border: none; color: #2f4f2f; margin: 14pt 0 6pt 0; }
+  .portada .sub { font-size: 13pt; color: #4b5563; margin-bottom: 40pt; }
+  .portada .meta { font-size: 10pt; color: #374151; line-height: 1.9; }
+  .caja { border-left: 4px solid #3f5c34; background: #f6f8f4; padding: 8pt 12pt; margin: 10pt 0; }
+  .alerta { border-left: 4px solid #b45309; background: #fffbeb; padding: 8pt 12pt; margin: 10pt 0; }
+  ul { margin: 5pt 0 8pt 18pt; } li { margin: 3pt 0; }
+  .pie { font-size: 8.5pt; color: #6b7280; text-align: center; margin-top: 24pt; border-top: 1px solid #d9dfd2; padding-top: 6pt; }
+  .cifra { font-size: 20pt; color: #2f4f2f; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <p class="marca">Controles Empresariales</p>
+  <h1>Plataforma Hacienda Ganadera</h1>
+  <p class="sub">Informe ejecutivo del proyecto<br>Alcance entregado, pendientes y conclusiones</p>
+  <p class="meta">
+    <strong>Documento:</strong> INF-HG-2026-01<br>
+    <strong>Versión del producto:</strong> v0.5.3<br>
+    <strong>Repositorio:</strong> github.com/MrCastilloF/Hacienda_Ganadera (privado)<br>
+    <strong>Fecha:</strong> 11 de noviembre de 2026<br>
+    <strong>Estado:</strong> Fases 0 a 5 en desarrollo; 3 completas
+  </p>
+</div>
+
+<h1>1. Resumen ejecutivo</h1>
+
+<p>Se ha construido la base funcional de una plataforma web para la gestión integral de una hacienda ganadera,
+orientada a tres problemas concretos del negocio: saber <strong>qué animales hay</strong>, saber
+<strong>cuánto pesan y cómo crecen</strong>, y saber <strong>cuándo se pueden vender con seguridad sanitaria</strong>.</p>
+
+<p>La plataforma está operativa de punta a punta en entorno local y de contenedores: registro e identificación
+de animales con genealogía validada, importación del hato existente desde CSV, pesaje inmutable con
+deduplicación, crecimiento y ganancia diaria, y tratamientos veterinarios que <strong>bloquean la venta</strong>
+mientras el periodo de retiro esté vigente.</p>
+
+<div class="caja">
+<p><strong>Indicadores principales del repositorio</strong></p>
+<p>
+<span class="cifra">36</span> commits ·
+<span class="cifra">17</span> versiones publicadas ·
+<span class="cifra">42</span> rutas de API ·
+<span class="cifra">155</span> pruebas automatizadas ·
+<span class="cifra">9</span> migraciones de base de datos ·
+<span class="cifra">6.322</span> líneas de backend ·
+<span class="cifra">2.206</span> líneas de frontend
+</p>
+</div>
+
+<p>El trabajo se organizó en doce fases. Tres están cerradas (especificación, plataforma base y animales), dos
+están muy avanzadas (báscula y crecimiento) y una tercera está a tres cuartas partes (salud). El resto depende
+de decisiones de negocio o de hardware que se detallan en la sección 6.</p>
+
+<div class="alerta">
+<p><strong>Mensaje central:</strong> el sistema no inventa datos. Un peso simulado se marca como simulado, un
+retiro de medicamento bloquea la venta, un pesaje no se puede editar y toda operación queda en una cadena de
+auditoría verificable. Esa disciplina es la diferencia entre un registro útil y un registro que hay que
+rehacer.</p>
+</div>
+
+<h1>2. Contexto y objetivo</h1>
+
+<p>La operación ganadera se apoya históricamente en cuadernos, hojas de cálculo aisladas y memoria del personal.
+Eso produce tres fallos recurrentes: inventarios que no cuadran, decisiones de venta tomadas sin saber si el
+animal cumplió el retiro de un medicamento, y pérdida de la trazabilidad cuando cambia el personal.</p>
+
+<p>El objetivo del proyecto es sustituir ese esquema por una plataforma que:</p>
+<ul>
+  <li>mantenga una <strong>ficha única por animal</strong> con identificación no reutilizable;</li>
+  <li>registre el <strong>peso como medición inmutable</strong>, no como dato editable;</li>
+  <li><strong>bloquee</strong> operaciones inseguras (vender un animal tratado) en el dominio, no en la pantalla;</li>
+  <li>funcione en campo, con conectividad intermitente y equipos modestos;</li>
+  <li>deje <strong>evidencia auditable</strong> de quién hizo qué y cuándo.</li>
+</ul>
+
+<h1>3. Alcance entregado</h1>
+
+<h2>3.1 Fase 1 — Plataforma base</h2>
+<p>Monorepo con API NestJS y frontend Next.js, PostgreSQL con PostGIS, Docker Compose, autenticación con JWT de
+vida corta y refresco rotativo, segundo factor TOTP, control de acceso por roles con alcance (global, finca,
+lote, propio) y <strong>auditoría encadenada por hash</strong> con verificación y detección de alteraciones.</p>
+<table>
+  <tr><th>Capacidad</th><th>Estado</th><th>Evidencia</th></tr>
+  <tr><td>Autenticación con MFA y bloqueo por intentos</td><td class="ok">Entregado</td><td>16 pruebas de integración</td></tr>
+  <tr><td>Roles y permisos por recurso y acción</td><td class="ok">Entregado</td><td>72 permisos, 238 asignaciones</td></tr>
+  <tr><td>Auditoría encadenada inalterable</td><td class="ok">Entregado</td><td>Trigger + verificación de cadena íntegra</td></tr>
+  <tr><td>Despliegue en contenedores y CI/CD</td><td class="ok">Entregado</td><td>4 flujos de trabajo en GitHub Actions</td></tr>
+</table>
+
+<h2>3.2 Fase 2 — Animales e identificación</h2>
+<p>Ficha única del animal con arete y código de barras generados según esquema configurable, historial de
+identificadores que impide la reutilización de un arete dado de baja, genealogía con validación de sexo, fechas
+y <strong>detección de ciclos</strong>, categoría derivada por edad y sexo calculada con el mismo criterio en base
+de datos y en código, búsqueda por arete o nombre, e <strong>importación del hato desde CSV</strong> con validación
+previa obligatoria y escritura todo-o-nada.</p>
+
+<h2>3.3 Fase 3 — Báscula y pesaje</h2>
+<p>Contrato de adaptador de báscula versionado, con un adaptador ASCII configurable que interpreta los formatos
+habituales de indicadores de ganado. Detección de <strong>peso estable</strong> por ventana temporal, tolerancia y
+número mínimo de muestras. Simulador con cinco escenarios (animal quieto, animal que se mueve, sobrecarga, trama
+corrupta, equipo desconectado) que alimenta la misma cadena que un pesaje real y queda marcado como
+<strong>origen simulado</strong>. Pesaje inmutable, idempotente y deduplicado por ventana de sesenta segundos, con
+anulación mediante evento compensatorio y motivo.</p>
+
+<h2>3.4 Fase 4 — Crecimiento y reportes</h2>
+<p>Ganancia diaria de peso calculada entre pesajes reales, excluyendo duplicados y anulados. Clasificación por
+categoría frente a un rango de referencia declarado. Reporte de finca con los animales de crecimiento bajo
+primero, curva de peso por animal con sus tramos y proyección lineal <strong>siempre acompañada de advertencia</strong>
+de que es una extrapolación, no un pronóstico validado. Interfaz web con búsqueda, filtros y gráfico sin
+dependencias externas.</p>
+
+<h2>3.5 Fase 5 — Salud (primer corte)</h2>
+<p>Tratamientos veterinarios inmutables con medicamento, dosis, vía, diagnóstico y días de retiro. El fin de
+retiro se calcula al registrar y se guarda, de modo que un cambio futuro de regla no reescribe el pasado. La
+máquina de estados <strong>rechaza vender o sacrificar</strong> un animal con retiro vigente, indicando el
+medicamento, los días restantes y la fecha exacta. Catálogo de referencia de ocho medicamentos con retiros para
+carne y leche, declarado explícitamente como no oficial.</p>
+
+<h1>4. Arquitectura y decisiones técnicas</h1>
+
+<table>
+  <tr><th>Decisión</th><th>Motivo</th><th>Consecuencia</th></tr>
+  <tr><td>SQL como fuente de verdad del esquema; Prisma solo como cliente tipado</td><td>Las migraciones deben ser revisables y auditables</td><td>Nunca se usa <em>db push</em>; toda tabla pasa por migración revisada</td></tr>
+  <tr><td>Inmutabilidad en la base, no en el código</td><td>Una regla que solo vive en la aplicación se salta con otra aplicación</td><td>Pesajes, tratamientos e historiales rechazan <em>UPDATE</em> y <em>DELETE</em> por trigger y por permisos</td></tr>
+  <tr><td>Auditoría encadenada por hash</td><td>Un registro de auditoría editable no es auditoría</td><td>Cada evento depende del anterior; la verificación detecta alteraciones incluso hechas por un superusuario</td></tr>
+  <tr><td>Protocolo de báscula como dato, no como código</td><td>Agregar una marca no debe obligar a tocar el sistema</td><td>La configuración vive en la báscula; sin adaptador registrado se informa «no soportado» en lugar de inventar soporte</td></tr>
+  <tr><td>Origen explícito del dato en toda medición</td><td>Confundir un dato simulado con uno real es el peor fallo posible</td><td>Pesajes y tratamientos llevan origen (campo, simulado, importado, manual)</td></tr>
+</table>
+
+<h1>5. Verificación y evidencia</h1>
+
+<p>La entrega no se apoya en afirmaciones sino en verificaciones reproducibles. Cada versión publicada pasó por
+integración continua, construcción de imágenes de contenedor y una prueba de humo que arranca el sistema desde
+cero, aplica las migraciones, siembra los catálogos, inicia sesión y verifica la cadena de auditoría.</p>
+
+<table>
+  <tr><th>Verificación</th><th>Resultado</th></tr>
+  <tr><td>Pruebas automatizadas</td><td>155 (62 unitarias de dominio, 24 del paquete de básculas, 69 de integración)</td></tr>
+  <tr><td>Integración continua</td><td class="ok">En verde en las ramas principal y de desarrollo</td></tr>
+  <tr><td>Construcción de imágenes</td><td class="ok">API y web publicadas en el registro de contenedores</td></tr>
+  <tr><td>Prueba de humo en contenedor</td><td class="ok">Arranque, migraciones, inicio de sesión y auditoría íntegra</td></tr>
+  <tr><td>Verificación de cadena de auditoría</td><td class="ok">Íntegra tras todas las operaciones</td></tr>
+  <tr><td>Análisis de dependencias de producción</td><td class="ok">Sin vulnerabilidades altas ni críticas</td></tr>
+  <tr><td>Detección de secretos</td><td class="ok">Sin secretos en el repositorio</td></tr>
+</table>
+
+<h2>5.1 Defectos encontrados durante la ejecución</h2>
+<p>Se documentan porque su naturaleza es más elocuente que el listado de funcionalidades:</p>
+<table>
+  <tr><th>Defecto</th><th>Impacto potencial</th><th>Cómo se detectó</th></tr>
+  <tr><td>Dígito de verificación del arete devolvía un valor inválido con prefijos alfabéticos</td><td>Arete generado incorrecto en la primera alta</td><td>Prueba unitaria</td></tr>
+  <tr><td>Edad calculada por días promedio en lugar de meses calendario</td><td><strong>Animales clasificados en la categoría equivocada</strong></td><td>Prueba de límites (12 y 24 meses)</td></tr>
+  <tr><td>Imagen de contenedor compilaba pero no arrancaba</td><td>Despliegue roto en producción</td><td>Prueba de humo en contenedor</td></tr>
+  <tr><td>Módulo de animales sin registrar en el módulo raíz</td><td>Todas las rutas respondían «no encontrado»</td><td>Pruebas de integración</td></tr>
+  <tr><td>Unidad de peso pegada al número no se detectaba</td><td>Pesos en libras leídos como kilogramos</td><td>Prueba del adaptador</td></tr>
+  <tr><td>Trama con campos entrecomillados producía un peso inventado</td><td>Registro de un peso que nunca existió</td><td>Prueba del adaptador</td></tr>
+</table>
+<p>La conclusión relevante: <strong>los defectos graves fueron de integración y de empaquetado, no de lógica de
+negocio</strong>. El dominio resistió; el riesgo estuvo en el borde.</p>
+
+<h1>6. Estado por fase</h1>
+
+<table>
+  <tr><th>Fase</th><th>Contenido</th><th>Estado</th></tr>
+  <tr><td>F0</td><td>Validación de la especificación, arquitectura, repositorio y CI</td><td class="ok">Completa</td></tr>
+  <tr><td>F1</td><td>Plataforma base, seguridad, autenticación, roles y auditoría</td><td class="ok">Completa</td></tr>
+  <tr><td>F2</td><td>Animales, identificación, genealogía e importación del hato</td><td class="ok">Completa</td></tr>
+  <tr><td>F3</td><td>Báscula, protocolos y pesaje</td><td class="parcial">80 % — falta el agente local de báscula (requiere hardware)</td></tr>
+  <tr><td>F4</td><td>Pesajes, crecimiento y reportes</td><td class="parcial">85 % — falta exportación a Excel y PDF y costo por kilo</td></tr>
+  <tr><td>F5</td><td>Veterinaria y salud</td><td class="parcial">75 % — falta vacunas y calendario sanitario</td></tr>
+  <tr><td>F6</td><td>Reproducción, nacimientos y genética</td><td class="pendiente">Sin iniciar</td></tr>
+  <tr><td>F7</td><td>Alimentación, potreros y movimientos</td><td class="pendiente">Sin iniciar</td></tr>
+  <tr><td>F8</td><td>Compras, ventas y finanzas</td><td class="pendiente">Sin iniciar</td></tr>
+  <tr><td>F9</td><td>LoRaWAN, etiquetas y pasarelas</td><td class="pendiente">Sin iniciar</td></tr>
+  <tr><td>F10</td><td>GPS, mapas y geocercas</td><td class="pendiente">Sin iniciar</td></tr>
+  <tr><td>F11</td><td>Panel, notificaciones y analítica</td><td class="pendiente">Sin iniciar</td></tr>
+  <tr><td>F12</td><td>Modo sin conexión avanzado, endurecimiento, carga y despliegue</td><td class="pendiente">Sin iniciar</td></tr>
+</table>
+
+<p><strong>Resumen:</strong> 3 fases completas, 3 parciales y 6 sin iniciar. En volumen de funcionalidad, la
+plataforma cubre el ciclo de trazabilidad básico (identidad del animal, peso, crecimiento y sanidad), que es
+aproximadamente un tercio del alcance total definido.</p>
+
+<h1>7. Pendientes y bloqueos</h1>
+
+<table>
+  <tr><th>Pendiente</th><th>Fase</th><th>Bloqueo</th><th>Responsable</th></tr>
+  <tr><td>Agente local de báscula (conexión física, cola durable, enrolamiento seguro)</td><td>F3</td><td>Requiere marca, modelo y manual de tramas del equipo</td><td>Cliente + desarrollo</td></tr>
+  <tr><td>Verificación con báscula real</td><td>F3</td><td>Ídem anterior</td><td>Cliente</td></tr>
+  <tr><td>Peso en vivo en la pantalla de pesaje</td><td>F3</td><td>Depende del agente local</td><td>Desarrollo</td></tr>
+  <tr><td>Exportación de reportes a Excel y PDF</td><td>F4</td><td>Ninguno</td><td>Desarrollo</td></tr>
+  <tr><td>Costo por kilo producido</td><td>F4</td><td>Depende de compras y ventas (F8)</td><td>Desarrollo</td></tr>
+  <tr><td>Vacunas y calendario sanitario</td><td>F5</td><td>Requiere validación del plan sanitario del cliente</td><td>Cliente + desarrollo</td></tr>
+  <tr><td>Catálogo oficial de medicamentos</td><td>F5</td><td>Requiere definición del país y autoridad sanitaria</td><td>Cliente</td></tr>
+  <tr><td>Facturación electrónica</td><td>F9</td><td>Requiere decisión sobre proveedor y normativa</td><td>Cliente</td></tr>
+  <tr><td>Sensores y geolocalización</td><td>F9-F10</td><td>Requiere decisión de hardware</td><td>Cliente</td></tr>
+</table>
+
+<div class="alerta">
+<p><strong>Decisión crítica:</strong> la marca, modelo y protocolo de la báscula es el único bloqueo que impide
+cerrar la Fase 3. Todo lo demás de esa fase está construido y probado contra el simulador; el día que se
+conozca el equipo, se ajusta la configuración y se valida en campo sin reescribir código.</p>
+</div>
+
+<h1>8. Riesgos y deuda técnica</h1>
+
+<table>
+  <tr><th>Riesgo</th><th>Nivel</th><th>Mitigación actual</th><th>Acción recomendada</th></tr>
+  <tr><td>Dependencia de una sola persona con conocimiento del sistema</td><td>Alto</td><td>Documentación extensa (más de 4.300 líneas) y decisiones registradas</td><td>Transferencia formal y revisión de código por un segundo desarrollador</td></tr>
+  <tr><td>Alertas de dependencias de desarrollo sin revisar</td><td>Medio</td><td>Análisis de dependencias de producción limpio</td><td>Habilitar el permiso de alertas de seguridad en el repositorio y revisarlas</td></tr>
+  <tr><td>Sin pruebas de carga</td><td>Medio</td><td>Arquitectura preparada para volumen</td><td>Pruebas de carga antes de la puesta en producción (F12)</td></tr>
+  <tr><td>Base de datos local distinta a la de producción</td><td>Bajo</td><td>Validación en contenedor en cada versión</td><td>Homologar versiones antes del despliegue</td></tr>
+  <tr><td>Modo sin conexión limitado a la interfaz</td><td>Medio</td><td>Estructura preparada, sincronización pendiente</td><td>Completar en F12 con cola local de operaciones</td></tr>
+  <tr><td>Datos de referencia declarados (retiros, rangos de crecimiento)</td><td>Medio</td><td>Marcados explícitamente como referencia en la API y en la interfaz</td><td>Reemplazar por fuentes oficiales validadas por el cliente</td></tr>
+</table>
+
+<h1>9. Conclusiones</h1>
+
+<p><strong>Primera.</strong> La plataforma resuelve el núcleo del problema operativo: identidad trazable del
+animal, peso confiable y control sanitario que impide vender un animal tratado. Ese conjunto ya tiene valor de
+uso: puede reemplazar el cuaderno y la hoja de cálculo en el registro diario.</p>
+
+<p><strong>Segunda.</strong> La calidad se apoyó en restricciones de base de datos y no en disciplina del
+programador. Los pesajes, tratamientos e historiales son inmutables por diseño; la auditoría se encadena por
+hash. Esto significa que el sistema puede demostrar lo que afirma, incluso frente al propio administrador.</p>
+
+<p><strong>Tercera.</strong> El proyecto prefirió declarar sus supuestos antes que esconderlos. Los retiros de
+medicamentos, los rangos de crecimiento y el perfil de báscula están marcados como referencia declarada en el
+código, en la interfaz y en los registros de auditoría. Un número equivocado visible es corregible; uno
+equivocado silencioso, no.</p>
+
+<p><strong>Cuarta.</strong> El ritmo de entrega fue alto (17 versiones publicadas), y el patrón de errores
+demuestra dónde está el riesgo real: no en las reglas del negocio, sino en la integración entre piezas —
+módulos, contenedores, empaquetado. La inversión correcta a partir de ahora es en verificación automatizada de
+extremo a extremo, no en más funcionalidad.</p>
+
+<p><strong>Quinta.</strong> El alcance restante es sustancial: seis fases sin iniciar, entre ellas todo el
+componente financiero y el de hardware avanzado. Sin decisiones del cliente sobre báscula, país de operación y
+facturación, el avance adicional corre el riesgo de construirse sobre supuestos que haya que deshacer.</p>
+
+<h1>10. Recomendaciones y próximos pasos</h1>
+
+<h2>10.1 Inmediato (sin dependencias externas)</h2>
+<ul>
+  <li><strong>Exportación de reportes</strong> a Excel y PDF, para cerrar la Fase 4 y permitir el trabajo fuera del sistema.</li>
+  <li><strong>Vacunas y calendario sanitario</strong>, para cerrar la Fase 5 con un plan validado por el veterinario del cliente.</li>
+  <li><strong>Pruebas de extremo a extremo automatizadas</strong> sobre los flujos críticos (alta, pesaje, venta bloqueada, importación).</li>
+</ul>
+
+<h2>10.2 Con decisión del cliente</h2>
+<ul>
+  <li><strong>Báscula:</strong> confirmar marca, modelo y tramas para construir el agente local y validar en campo.</li>
+  <li><strong>País de operación:</strong> definir el catálogo oficial de medicamentos y los requisitos de facturación.</li>
+  <li><strong>Hardware de campo:</strong> decidir si se usan sensores y geolocalización propios o de terceros.</li>
+</ul>
+
+<h2>10.3 Antes de la puesta en producción</h2>
+<ul>
+  <li>Pruebas de carga con volumen realista de animales y pesajes.</li>
+  <li>Homologación de versiones entre entorno de desarrollo y producción.</li>
+  <li>Revisión de alertas de dependencias y plan de actualización.</li>
+  <li>Capacitación del personal de campo en las tres pantallas de uso diario: animales, pesaje y salud.</li>
+  <li>Respaldo y restauración verificados con una prueba real de recuperación.</li>
+</ul>
+
+<div class="caja">
+<p><strong>Conclusión final.</strong> El proyecto entregó una base sólida, verificada y honesta sobre lo que
+sabe y lo que no sabe. La recomendación es <strong>cerrar las tres fases parciales antes de abrir nuevas</strong>:
+un sistema que hace bien tres cosas y las declara completas vale más que uno que hace diez a medias.</p>
+</div>
+
+<p class="pie">
+Informe ejecutivo · Plataforma Hacienda Ganadera · v0.5.3 · Documento generado el 11 de noviembre de 2026<br>
+Cifras verificadas contra el repositorio: 36 commits, 17 versiones, 42 rutas de API, 155 pruebas automatizadas.
+</p>
+
+</body>
+</html>

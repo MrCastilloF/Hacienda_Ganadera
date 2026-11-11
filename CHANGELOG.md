@@ -4,6 +4,14 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.1.4] — 2026-11-11
+
+### Corregido
+- **La API no podía leer las claves montadas en Docker** (`EACCES` sobre `/run/secrets/jwt_private.pem`): un
+  *bind mount* conserva el propietario del host y el contenedor corre como `node`. El entrypoint ahora copia
+  los secretos a una ruta interna, ajusta propietario y permisos, y cede privilegios con `gosu`: el proceso
+  de la aplicación **nunca** corre como root. Detectado por la prueba `docker-smoke`, no en revisión.
+
 ## [0.1.3] — 2026-11-11
 
 ### Agregado

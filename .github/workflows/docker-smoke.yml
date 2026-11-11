@@ -86,6 +86,12 @@ jobs:
           docker logs hg-api
           exit 1
 
+      - name: Verificar que la aplicación no corre como root
+        run: |
+          UID_APP="$(docker exec hg-api id -u)"
+          echo "UID del proceso de la aplicación: ${UID_APP}"
+          test "${UID_APP}" != "0"
+
       - name: Verificar base de datos y auditoría
         run: |
           curl -fsS http://127.0.0.1:3001/ready | tee /tmp/ready.json

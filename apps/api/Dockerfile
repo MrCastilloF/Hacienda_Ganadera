@@ -33,7 +33,7 @@ FROM node:22-bookworm-slim AS runtime
 ENV NODE_ENV=production \
     TZ=UTC
 RUN apt-get update \
- && apt-get install -y --no-install-recommends openssl ca-certificates curl \
+ && apt-get install -y --no-install-recommends openssl ca-certificates curl gosu \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -48,9 +48,12 @@ COPY --from=base /app/scripts ./scripts
 COPY apps/api/docker-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && chown -R node:node /app
 
-# Usuario sin privilegios: la aplicación nunca corre como root.
-USER node
 WORKDIR /app/apps/api
+
+# El entrypoint se ejecuta como root solo para preparar los secretos montados
+# (propietario del host) y luego cede el control a `node` con gosu. El proceso
+# de la aplicación nunca corre como root.
+USER root
 
 EXPOSE 3001
 HEALTHCHECK --interval=20s --timeout=5s --start-period=40s --retries=5 \

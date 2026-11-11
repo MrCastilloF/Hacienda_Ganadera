@@ -1,0 +1,23 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Dependencias autorizadas a ejecutar scripts de instalación (formato pnpm 12).
+# Solo las que realmente lo necesitan: binarios nativos, binarios de PostgreSQL
+# embebido y generación del cliente de Prisma. Cualquier otra debe justificarse
+# en el PR antes de agregarse aquí.
+allowBuilds:
+  '@embedded-postgres/windows-x64': true
+  '@embedded-postgres/linux-x64': true
+  '@embedded-postgres/linux-arm64': true
+  '@embedded-postgres/darwin-x64': true
+  '@embedded-postgres/darwin-arm64': true
+  '@node-rs/argon2': true
+  '@prisma/client': true
+  '@prisma/engines': true
+  '@scarf/scarf': true
+  '@swc/core': true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true

@@ -1,0 +1,43 @@
+{
+  "name": "hacienda-ganadera",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma de administración, trazabilidad y monitoreo de una hacienda ganadera",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.10.1",
+  "scripts": {
+    "build": "pnpm --filter @hacienda/api --filter @hacienda/web run build",
+    "dev": "node scripts/dev/dev.mjs",
+    "start": "pnpm --filter @hacienda/api run start",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm --filter @hacienda/api run test",
+    "test:coverage": "pnpm --filter @hacienda/api run test:coverage",
+    "test:integration": "pnpm --filter @hacienda/api run test:integration",
+    "test:e2e": "node scripts/dev/e2e.mjs",
+    "migrate": "node scripts/dev/lib/migrations.mjs",
+    "migrate:status": "node scripts/dev/lib/migrations.mjs --status",
+    "seed": "node scripts/dev/lib/seed.mjs",
+    "db:local": "node scripts/dev/db-local.mjs",
+    "audit:verify": "node scripts/dev/audit-verify.mjs",
+    "openapi:export": "pnpm --filter @hacienda/api run openapi:export",
+    "verify": "node scripts/ci/verify.mjs",
+    "docs": "node scripts/ci/check-docs.mjs",
+    "secrets": "node scripts/ci/check-secrets.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@node-rs/argon2": "^2.0.2",
+    "@types/node": "^22.10.2",
+    "embedded-postgres": "^18.6.0-beta.19",
+    "eslint": "^9.17.0",
+    "pg": "^8.13.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^2.1.8"
+  }
+}

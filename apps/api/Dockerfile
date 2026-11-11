@@ -50,6 +50,7 @@ COPY --from=base /app/apps/api/package.json ./apps/api/package.json
 COPY --from=base /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=base /app/apps/api/dist ./apps/api/dist
 COPY --from=base /app/apps/api/prisma ./apps/api/prisma
+COPY --from=base /app/packages ./packages
 COPY --from=base /app/infra ./infra
 COPY --from=base /app/scripts ./scripts
 COPY apps/api/docker-entrypoint.sh /usr/local/bin/entrypoint.sh

@@ -4,6 +4,13 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.3.2] — 2026-11-11
+
+### Corregido
+- **La API del contenedor no arrancaba**: la etapa de ejecución de la imagen no copiaba `packages/`, así que
+  el enlace al paquete compartido quedaba roto (`Cannot find module '@hacienda/scale-protocols'`). Las
+  migraciones y el seed sí se aplicaban. Lo detectó `docker-smoke`.
+
 ## [0.3.1] — 2026-11-11
 
 ### Corregido

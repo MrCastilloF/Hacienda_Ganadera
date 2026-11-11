@@ -37,7 +37,9 @@ chmod 600 .env
 # Editar .env: cambios de contraseña, dominio, rutas de secretos, zona horaria
 
 # 4. Secretos (nunca en el repositorio)
-#    Generar claves JWT, CA de mTLS y credenciales; cargarlas en el gestor de secretos
+node scripts/dev/generate-keys.mjs    # claves RS256 → secrets/ (ignoradas por Git)
+#    Además: CA de mTLS y credenciales, cargadas en el gestor de secretos.
+#    Sin estas claves la API no arranca en producción (no genera claves efímeras).
 
 # 5. Levantar
 docker compose up -d

@@ -1,0 +1,115 @@
+name: docker-smoke
+
+# Arranca las imágenes publicadas contra un PostgreSQL real y comprueba que el
+# servicio responde. Es la única forma de verificar que la imagen funciona y no
+# solo que compila: sin esto, "la imagen se construye" es una promesa, no un hecho.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Etiqueta de imagen a probar"
+        required: false
+        default: "latest"
+  schedule:
+    - cron: "30 3 * * *"
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  run-api-image:
+    name: arrancar api publicada
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: hacienda
+          POSTGRES_USER: hacienda_owner
+          POSTGRES_PASSWORD: prueba_smoke_2026
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hacienda_owner -d hacienda"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Calcular nombre de imagen
+        id: image
+        run: |
+          PREFIX="$(echo "ghcr.io/${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
+          echo "ref=${PREFIX}/api:${{ github.event.inputs.tag || 'latest' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Iniciar sesión en GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Preparar secretos efímeros
+        run: |
+          # La contraseña del humo se genera aquí: no se versiona ninguna credencial.
+          echo "SMOKE_PASSWORD=$(openssl rand -base64 18)" >> "$GITHUB_ENV"
+          node scripts/dev/generate-keys.mjs
+
+      - name: Arrancar el contenedor
+        run: |
+          docker run -d --name hg-api --network host \
+            -e NODE_ENV=production \
+            -e DATABASE_URL="postgresql://hacienda_owner:prueba_smoke_2026@127.0.0.1:5432/hacienda?schema=app" \
+            -e JWT_PRIVATE_KEY_PATH=/run/secrets/jwt_private.pem \
+            -e JWT_PUBLIC_KEY_PATH=/run/secrets/jwt_public.pem \
+            -e RUN_MIGRATIONS=true \
+            -e RUN_SEED=true \
+            -e SEED_ADMIN_PASSWORD="${{ env.SMOKE_PASSWORD }}" \
+            -e SEED_ADMIN_EMAIL="humo@hacienda.local" \
+            -e LOG_LEVEL=info \
+            -v "$PWD/secrets:/run/secrets:ro" \
+            "${{ steps.image.outputs.ref }}"
+
+      - name: Esperar a que responda /health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3001/health > /dev/null 2>&1; then
+              echo "API en pie tras ${i} intentos"
+              curl -fsS http://127.0.0.1:3001/health
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::La API no respondió en 120 s"
+          docker logs hg-api
+          exit 1
+
+      - name: Verificar base de datos y auditoría
+        run: |
+          curl -fsS http://127.0.0.1:3001/ready | tee /tmp/ready.json
+          grep -q '"database":"ok"' /tmp/ready.json
+
+      - name: Iniciar sesión de extremo a extremo
+        run: |
+          RESP="$(curl -fsS -X POST http://127.0.0.1:3001/api/v1/auth/login \
+            -H 'content-type: application/json' \
+            -d "{\"email\":\"humo@hacienda.local\",\"password\":\"${SMOKE_PASSWORD}\"}")"
+          echo "$RESP" | head -c 200; echo
+          TOKEN="$(echo "$RESP" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(!j.accessToken){process.exit(1)}process.stdout.write(j.accessToken)})")"
+          curl -fsS http://127.0.0.1:3001/api/v1/auth/me -H "authorization: Bearer $TOKEN" | head -c 300; echo
+          curl -fsS http://127.0.0.1:3001/api/v1/auditoria/verificar -H "authorization: Bearer $TOKEN" | tee /tmp/audit.json
+          grep -q '"integra":true' /tmp/audit.json
+
+      - name: Registrar el resultado
+        if: always()
+        run: |
+          echo "### Resultado" >> "$GITHUB_STEP_SUMMARY"
+          docker ps -a --filter name=hg-api --format '{{.Status}}' >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Logs y limpieza
+        if: always()
+        run: |
+          docker logs hg-api --tail 80 || true
+          docker rm -f hg-api || true

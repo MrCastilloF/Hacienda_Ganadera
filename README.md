@@ -53,7 +53,9 @@ Lista completa en [`docs/01` §3](docs/01-especificacion-corregida.md).
 ### Opción A — Docker (recomendado en la hacienda)
 
 ```bash
-cp .env.example .env          # complete las contraseñas
+cp .env.example .env                # complete las contraseñas
+node scripts/dev/generate-keys.mjs  # claves RS256 en secrets/ (ignoradas por Git)
+
 docker compose up -d postgres redis minio proxy
 docker compose --profile app up -d --build
 

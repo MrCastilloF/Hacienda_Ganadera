@@ -4,6 +4,15 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.1.3] — 2026-11-11
+
+### Agregado
+- **Generación de claves RS256** (`scripts/dev/generate-keys.mjs`): en producción la API se niega a arrancar
+  sin claves, y antes no había forma de generarlas. Compose las monta como secretos en `/run/secrets`.
+- **Prueba de imagen publicada** (`docker-smoke`): arranca el contenedor contra un PostgreSQL real, espera
+  `/health`, verifica `/ready`, inicia sesión y comprueba la cadena de auditoría. Construir una imagen no
+  demuestra que funcione.
+
 ## [0.1.2] — 2026-11-11
 
 ### Corregido

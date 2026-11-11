@@ -11,7 +11,8 @@
  * Salida: código 0 si no hay hallazgos, 1 si hay alguno.
  */
 
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { join, extname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -86,7 +87,32 @@ function isTextFile(file) {
   return TEXT_EXT.has(ext);
 }
 
-const files = walk(ROOT).filter(isTextFile);
+/**
+ * Se analiza exactamente lo que se va a versionar: archivos rastreados más los
+ * no rastreados que no estén ignorados. Así una clave generada localmente en
+ * `secrets/` (ignorada por Git) no rompe la verificación, pero una clave que
+ * alguien intente commitear sí se detecta.
+ */
+function archivosVersionables() {
+  try {
+    const salida = execSync('git ls-files -co --exclude-standard', {
+      cwd: ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return salida
+      .split('\n')
+      .map((linea) => linea.trim())
+      .filter(Boolean)
+      .map((ruta) => `${ROOT}/${ruta}`)
+      .filter((ruta) => existsSync(ruta));
+  } catch {
+    // Sin Git (por ejemplo, en un artefacto exportado) se recorre el árbol.
+    return walk(ROOT);
+  }
+}
+
+const files = archivosVersionables().filter(isTextFile);
 
 for (const file of files) {
   const relPath = relative(ROOT, file).split('\\').join('/');

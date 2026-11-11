@@ -169,10 +169,16 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY:-cambiar_en_produccion}
       JWT_ISSUER: ${JWT_ISSUER:-hacienda-ganadera}
       JWT_AUDIENCE: ${JWT_AUDIENCE:-hacienda-web}
+      # En producción no hay claves efímeras: se generan con
+      # `node scripts/dev/generate-keys.mjs` y se montan como secretos.
+      JWT_PRIVATE_KEY_PATH: /run/secrets/jwt_private.pem
+      JWT_PUBLIC_KEY_PATH: /run/secrets/jwt_public.pem
       LOG_LEVEL: ${LOG_LEVEL:-info}
       TZ: ${TZ:-America/Bogota}
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
       RUN_SEED: ${RUN_SEED:-false}
+    volumes:
+      - ./secrets:/run/secrets:ro
     expose:
       - "3001"
     healthcheck:

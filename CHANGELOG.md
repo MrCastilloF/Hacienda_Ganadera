@@ -4,6 +4,16 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.5.2] — 2026-11-11
+
+### Agregado
+- **Catálogo de medicamentos de referencia** (8 productos) con días de retiro para carne y leche, vía de
+  aplicación y notas. Los valores se declaran explícitamente como **referencia no oficial**: prevalecen el
+  prospecto del fabricante y el criterio del veterinario.
+- **Alertas de retiro por vencer**: `GET /tratamientos/alertas?dias=7` responde la pregunta diaria del
+  ganadero —«¿ya puedo vender este animal?»— con arete, medicamento, fecha y días restantes.
+- 6 pruebas unitarias del catálogo y del conteo de días.
+
 ## [0.5.1] — 2026-11-11
 
 ### Corregido

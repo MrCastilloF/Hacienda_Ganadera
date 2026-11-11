@@ -10,6 +10,11 @@ import { parseBody, parseParams, parseQuery } from '../common/validation';
 import { CurrentUser, Require } from '../rbac/decorators';
 import type { AccessTokenPayload } from '../auth/token.service';
 import { calcularRetiro, evaluarRetiro } from './domain/retiro';
+import {
+  AVISO_CATALOGO,
+  CATALOGO_MEDICAMENTOS,
+  diasHastaRetiro,
+} from './domain/medicamentos';
 import { admiteOperaciones, type EstadoAnimal } from '../animales/domain/estados';
 
 const CrearSchema = z.object({
@@ -29,6 +34,10 @@ const CrearSchema = z.object({
 });
 
 const AnularSchema = z.object({ motivo: z.string().min(5).max(300) });
+
+const AlertasQuery = z.object({
+  dias: z.coerce.number().int().min(1).max(120).default(7),
+});
 
 const ListadoQuery = z.object({
   animalId: z.string().uuid().optional(),
@@ -256,6 +265,57 @@ export class SaludService {
     });
   }
 
+
+  /**
+   * Alertas de retiro: animales que podrán venderse en los próximos N días.
+   *
+   * Es la pregunta que el ganadero hace todos los días: "¿ya puedo vender este?".
+   */
+  async alertasRetiro(dias: number, fincaId?: string) {
+    const ahora = new Date();
+    const limite = new Date(ahora.getTime() + dias * 86_400_000);
+
+    const tratamiento = await this.prisma.tratamiento.findMany({
+      where: {
+        finRetiro: { gte: ahora, lte: limite },
+        anulacion: null,
+        ...(fincaId ? { fincaId } : {}),
+      },
+      orderBy: { finRetiro: 'asc' },
+      select: {
+        id: true,
+        animalId: true,
+        medicamento: true,
+        finRetiro: true,
+        animal: { select: { arete: true } },
+      },
+    });
+
+    return {
+      ventanaDias: dias,
+      total: tratamiento.length,
+      items: tratamiento.map((t) => ({
+        tratamientoId: t.id,
+        animalId: t.animalId,
+        arete: t.animal.arete,
+        medicamento: t.medicamento,
+        finRetiro: t.finRetiro,
+        diasRestantes: diasHastaRetiro(t.finRetiro, ahora),
+        venceHoy: diasHastaRetiro(t.finRetiro, ahora) === 0,
+      })),
+      aviso: 'Solo se listan retiros vigentes; un retiro vencido ya no bloquea la venta.',
+    };
+  }
+
+  /** Catálogo de referencia, con su advertencia de procedencia. */
+  catalogo() {
+    return {
+      total: CATALOGO_MEDICAMENTOS.length,
+      aviso: AVISO_CATALOGO,
+      items: CATALOGO_MEDICAMENTOS,
+    };
+  }
+
   private formatear(
     t: { id: string; finTratamiento: Date; finRetiro: Date },
     arete: string,
@@ -290,6 +350,29 @@ export class SaludController {
       ...filtros,
       fincaId: user.scope === 'global' ? filtros.fincaId : (filtros.fincaId ?? user.fincas[0]),
     });
+  }
+
+
+  @Get('catalogo')
+  @Require('salud', 'consultar')
+  @ApiOperation({
+    summary: 'Catálogo de medicamentos de referencia',
+    description:
+      'Los días de retiro son valores declarados de referencia, no la ficha oficial del producto.',
+  })
+  catalogo() {
+    return this.salud.catalogo();
+  }
+
+  @Get('alertas')
+  @Require('salud', 'consultar')
+  @ApiOperation({ summary: 'Retiros que vencen en los próximos días' })
+  async alertas(@Query() query: Record<string, unknown>, @CurrentUser() user: AccessTokenPayload) {
+    const { dias } = parseQuery(AlertasQuery, query);
+    return this.salud.alertasRetiro(
+      dias,
+      user.scope === 'global' ? undefined : user.fincas[0],
+    );
   }
 
   @Post()

@@ -862,6 +862,156 @@
           "básculas"
         ]
       }
+    },
+    "/api/v1/reportes/crecimiento": {
+      "get": {
+        "description": "Solo cuenta pesajes válidos: excluye duplicados y anulados. Los animales con crecimiento bajo aparecen primero porque son los que exigen acción.",
+        "operationId": "reportes_crecimiento",
+        "parameters": [
+          {
+            "name": "soloBajo",
+            "required": false,
+            "in": "query",
+            "description": "Filtra los animales con GDP bajo",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Ganancia diaria de peso por animal, con clasificación frente al rango esperado",
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/v1/reportes/crecimiento/{id}": {
+      "get": {
+        "description": "La proyección es una extrapolación lineal y se devuelve siempre con advertencia: no es un pronóstico validado.",
+        "operationId": "reportes_animal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Curva de peso, tramos y proyección de un animal",
+        "tags": [
+          "reportes"
+        ]
+      }
+    },
+    "/api/v1/tratamientos": {
+      "get": {
+        "operationId": "salud_listar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista tratamientos con su estado de retiro",
+        "tags": [
+          "salud"
+        ]
+      },
+      "post": {
+        "description": "El fin de retiro se calcula desde el último día de tratamiento. Mientras esté vigente, el animal no puede pasar a vendido ni sacrificado.",
+        "operationId": "salud_crear",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra un tratamiento y calcula su periodo de retiro",
+        "tags": [
+          "salud"
+        ]
+      }
+    },
+    "/api/v1/tratamientos/catalogo": {
+      "get": {
+        "description": "Los días de retiro son valores declarados de referencia, no la ficha oficial del producto.",
+        "operationId": "salud_catalogo",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Catálogo de medicamentos de referencia",
+        "tags": [
+          "salud"
+        ]
+      }
+    },
+    "/api/v1/tratamientos/alertas": {
+      "get": {
+        "operationId": "salud_alertas",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Retiros que vencen en los próximos días",
+        "tags": [
+          "salud"
+        ]
+      }
+    },
+    "/api/v1/tratamientos/{id}/anular": {
+      "post": {
+        "operationId": "salud_anular",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Anula un tratamiento con motivo (evento compensatorio)",
+        "tags": [
+          "salud"
+        ]
+      }
     }
   },
   "info": {

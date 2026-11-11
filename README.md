@@ -90,6 +90,17 @@ pnpm test:e2e      # prueba de humo contra los servicios en marcha
 pnpm audit:verify  # integridad de la cadena de auditoría
 ```
 
+### Verificación del despliegue
+
+La imagen publicada no solo compila: se ejecuta. El flujo [`docker-smoke`](.github/workflows/docker-smoke.yml)
+arranca el contenedor contra un PostgreSQL real y comprueba health, disponibilidad de la base, que el proceso
+no corre como root, un inicio de sesión completo y la integridad de la cadena de auditoría. Se ejecuta de
+forma programada y puede lanzarse a mano:
+
+```bash
+gh workflow run docker-smoke -f tag=v0.1.5
+```
+
 ## Mapa de la documentación
 
 ```text

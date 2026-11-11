@@ -249,6 +249,34 @@ export async function runSeed({ databaseUrl, silent = false } = {}) {
     );
     const fincaId = finca.rows[0].id;
 
+    // ── Báscula por defecto (perfil HACIENDA-GEN-01) ─────────────────────────
+    // Supuesto declarado: mientras no se confirme marca y modelo (C-02), la
+    // hacienda arranca con un perfil ASCII genérico marcado como "declared".
+    const PERFIL = {
+      perfil: 'HACIENDA-GEN-01',
+      puerto: { baudRate: 9600, dataBits: 8, parity: 'none', stopBits: 1 },
+      trama: {
+        delimitador: '\r\n',
+        campoPeso: 2,
+        separadorCampos: ',',
+        caracterEstable: 'ST',
+        caracterInestable: 'US',
+        decimales: 1,
+        unidadPorDefecto: 'kg',
+      },
+      resolucionKg: 0.1,
+    };
+
+    await client.query(
+      `INSERT INTO app.bascula
+         (finca_id, nombre, protocol_id, transporte, config_json,
+          tolerance_kg, window_ms, min_samples, min_kg, max_kg, estado_integracion)
+       VALUES ($1, 'Báscula principal (perfil por defecto)', 'generic-ascii', 'SERIAL', $2,
+               0.5, 1200, 5, 0, 1500, 'declared')
+       ON CONFLICT (finca_id, nombre) DO UPDATE SET config_json = EXCLUDED.config_json`,
+      [fincaId, JSON.stringify(PERFIL)],
+    );
+
     // ── Numeración de aretes (RF-ANI-10) ─────────────────────────────────────
     // Se siembra una configuración por defecto editable por el administrador.
     await client.query(

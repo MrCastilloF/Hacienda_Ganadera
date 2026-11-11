@@ -9,7 +9,7 @@
   },
   "packageManager": "pnpm@12.10.1",
   "scripts": {
-    "build": "pnpm --filter @hacienda/api --filter @hacienda/web run build",
+    "build": "pnpm --filter @hacienda/scale-protocols run build && pnpm --filter @hacienda/api --filter @hacienda/web run build",
     "dev": "node scripts/dev/dev.mjs",
     "start": "pnpm --filter @hacienda/api run start",
     "lint": "eslint . --max-warnings=0",

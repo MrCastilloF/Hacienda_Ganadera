@@ -4,6 +4,30 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.3.0] — 2026-11-11 · Fase 3 (núcleo sin hardware)
+
+### Agregado
+- **Paquete `@hacienda/scale-protocols`**: contrato de adaptador v1, adaptador ASCII genérico configurable,
+  detección de estabilidad por ventana, simulador con cinco modos y registro de adaptadores. 24 pruebas.
+- **Perfil de báscula por defecto `HACIENDA-GEN-01`** (supuesto declarado): 8N1 a 9600, trama `ST,GS,+kg`,
+  tolerancia 0,5 kg, ventana 1200 ms, 5 muestras, rango 0–1500 kg, resolución 0,1 kg.
+- **Tablas de báscula, bridge y pesaje**: el pesaje es append-only (trigger + `REVOKE`), con trama cruda,
+  origen explícito e índice de deduplicación.
+- **API de pesajes**: registro inmutable e idempotente, deduplicación por ventana de 60 s, validación de
+  estado del animal y rango del equipo, historial por animal y **pesaje simulado de punta a punta**
+  (adaptador → estabilidad → registro) marcado como `SIMULATOR`.
+- **API de básculas**: alta y ajuste de umbrales por equipo, listado de protocolos con adaptador y aviso
+  cuando un protocolo no tiene soporte.
+- **Pantalla de pesaje web**: buscador por arete, peso en tipografía grande, diferencia contra el último
+  pesaje, botón de simulación con diagnóstico (tramas, muestras, dispersión).
+
+### Corregido (defectos encontrados al ejecutar)
+- **La unidad pegada al número no se detectaba** (`+01000.0lb` se leía como kg): el límite de palabra de la
+  expresión regular no existe entre dígito y letra.
+- **Una trama con campos entrecomillados se truncaba** y producía un peso inventado (1,45 kg): ahora se rechaza.
+- El módulo de pesajes no estaba registrado y el paquete compartido no se construía antes de la API
+  (pre-scripts agregados).
+
 ## [0.2.0] — 2026-11-11 · Fase 2
 
 ### Agregado

@@ -203,7 +203,15 @@ Leyenda de la columna **Clase**: `M` = maestra/catálogo, `T` = transaccional, `
 
 **Total:** 68 tablas + particiones mensuales de `posicion`/`telemetria` y anuales de `evento_dominio`/`audit_log`.
 
-### 3.11 Animales (Fase 2)
+### 3.11 Pesajes y básculas (Fase 3)
+
+| Tabla | Clase | Propósito |
+|---|---|---|
+| `bascula` | M | Equipo, protocolo, transporte, parámetros de estabilidad y estado de integración |
+| `bridge` | M | Agente del puesto de pesaje (huella de certificado para revocación) |
+| `pesaje` | E | Medición inmutable: peso, trama cruda, origen, deduplicación e idempotencia |
+
+### 3.12 Animales (Fase 2)
 
 | Tabla | Clase | Propósito |
 |---|---|---|

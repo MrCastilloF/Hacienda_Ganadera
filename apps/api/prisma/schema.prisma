@@ -44,6 +44,9 @@ model Finca {
   usuarios UsuarioFinca[]
   lotes    Lote[]
   animales Animal[]
+  basculas Bascula[]
+  bridges  Bridge[]
+  pesajes  Pesaje[]
 
   @@map("finca")
   @@schema("app")
@@ -292,6 +295,7 @@ model Animal {
   criasComoPadre  Animal[]                @relation("Padre")
   identificaciones AnimalIdentificacion[]
   estados         AnimalEstadoHistorial[]
+  pesajes         Pesaje[]
 
   @@unique([fincaId, arete], map: "uq_animal_finca_arete")
   @@unique([codigoBarras], map: "uq_animal_codigo_barras")
@@ -331,5 +335,89 @@ model AnimalEstadoHistorial {
 
   @@index([animalId], map: "ix_estado_animal")
   @@map("animal_estado_historial")
+  @@schema("app")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Fase 3 · Básculas, bridges y pesajes
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Bascula {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId            String   @map("finca_id") @db.Uuid
+  nombre             String
+  marca              String?
+  modelo             String?
+  serie              String?
+  protocolId         String   @default("generic-ascii") @map("protocol_id")
+  transporte         String   @default("SERIAL")
+  configJson         Json     @default("{}") @map("config_json")
+  toleranceKg        Decimal  @default(0.5) @map("tolerance_kg") @db.Decimal(6, 2)
+  windowMs           Int      @default(1200) @map("window_ms")
+  minSamples         Int      @default(5) @map("min_samples")
+  minKg              Decimal  @default(0) @map("min_kg") @db.Decimal(8, 2)
+  maxKg              Decimal  @default(2000) @map("max_kg") @db.Decimal(8, 2)
+  estadoIntegracion  String   @default("declared") @map("estado_integracion")
+  activa             Boolean  @default(true)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  createdBy          String?  @map("created_by") @db.Uuid
+  updatedBy          String?  @map("updated_by") @db.Uuid
+
+  finca    Finca    @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+  pesajes  Pesaje[]
+
+  @@unique([fincaId, nombre], map: "uq_bascula_nombre")
+  @@map("bascula")
+  @@schema("app")
+}
+
+model Bridge {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId            String    @map("finca_id") @db.Uuid
+  nombre             String
+  version            String?
+  huellaCertificado  String?   @map("huella_certificado")
+  estado             String    @default("pendiente")
+  ultimaComunicacion DateTime? @map("ultima_comunicacion") @db.Timestamptz(6)
+  colaPendiente      Int       @default(0) @map("cola_pendiente")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  finca   Finca    @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+  pesajes Pesaje[]
+
+  @@unique([fincaId, nombre], map: "uq_bridge_nombre")
+  @@map("bridge")
+  @@schema("app")
+}
+
+model Pesaje {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId        String    @map("finca_id") @db.Uuid
+  animalId       String    @map("animal_id") @db.Uuid
+  basculaId      String?   @map("bascula_id") @db.Uuid
+  bridgeId       String?   @map("bridge_id") @db.Uuid
+  pesoKg         Decimal   @map("peso_kg") @db.Decimal(8, 2)
+  tipo           String    @default("CONTROL")
+  ocurridoAt     DateTime  @map("ocurrido_at") @db.Timestamptz(6)
+  recibidoAt     DateTime  @default(now()) @map("recibido_at") @db.Timestamptz(6)
+  registradoPor  String?   @map("registrado_por") @db.Uuid
+  edadDias       Int?      @map("edad_dias")
+  observaciones  String?
+  origen         String
+  duplicateOf    String?   @map("duplicate_of") @db.Uuid
+  tramaCruda     String?   @map("trama_cruda")
+  idempotencyKey String    @unique @map("idempotency_key") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  finca      Finca    @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+  animal     Animal   @relation(fields: [animalId], references: [id], onDelete: Restrict)
+  bascula    Bascula? @relation(fields: [basculaId], references: [id], onDelete: Restrict)
+  bridge     Bridge?  @relation(fields: [bridgeId], references: [id], onDelete: Restrict)
+
+  @@index([animalId], map: "ix_pesaje_animal_fecha")
+  @@index([fincaId], map: "ix_pesaje_finca_fecha")
+  @@map("pesaje")
   @@schema("app")
 }

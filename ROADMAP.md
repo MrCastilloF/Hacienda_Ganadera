@@ -67,13 +67,16 @@ Fase 7 junto con potreros y movimientos.
 
 ---
 
-## F3 · Báscula, códigos de barras y Local Bridge
+## F3 · Báscula, códigos de barras y Local Bridge ⏳ en curso
 
 Contrato de adaptador, transporte serie/TCP, detección de estabilidad, enrolamiento mTLS, cola durable,
 diagnóstico, lector HID, pantalla de pesaje con 2 toques.
 Simulador de báscula obligatorio; estado `simulated` hasta tener hardware.
 
-**Criterio:** pesaje completo sin red, sin pérdida, con trama cruda auditada.
+**Entregado (sin hardware):** contrato de adaptador v1, adaptador ASCII configurable, detección de estabilidad,
+simulador con cinco modos, perfil por defecto declarado, pesaje inmutable e idempotente con deduplicación,
+pantalla de pesaje y 14 pruebas de integración.
+**Pendiente:** Local Bridge instalable con mTLS y cola durable, y verificación con báscula real (depende de C-02).
 
 ---
 

@@ -112,6 +112,30 @@ jobs:
           curl -fsS http://127.0.0.1:3001/api/v1/auditoria/verificar -H "authorization: Bearer $TOKEN" | tee /tmp/audit.json
           grep -q '"integra":true' /tmp/audit.json
 
+      - name: Arrancar la web publicada
+        run: |
+          WEB_REF="$(echo "ghcr.io/${GITHUB_REPOSITORY}/web:${{ github.event.inputs.tag || 'latest' }}" | tr '[:upper:]' '[:lower:]')"
+          echo "Web: ${WEB_REF}"
+          docker run -d --name hg-web --network host \
+            -e API_URL=http://127.0.0.1:3001 \
+            -e PORT=3000 \
+            -e NODE_ENV=production \
+            "${WEB_REF}"
+
+      - name: Esperar a la pantalla de ingreso
+        run: |
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:3000/login > /tmp/login.html 2>/dev/null; then
+              echo "Web en pie tras ${i} intentos ($(wc -c < /tmp/login.html) bytes)"
+              grep -qi 'Contrase' /tmp/login.html
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::La web no respondió en 90 s"
+          docker logs hg-web --tail 60
+          exit 1
+
       - name: Registrar el resultado
         if: always()
         run: |
@@ -121,5 +145,6 @@ jobs:
       - name: Logs y limpieza
         if: always()
         run: |
-          docker logs hg-api --tail 80 || true
-          docker rm -f hg-api || true
+          docker logs hg-api --tail 40 || true
+          docker logs hg-web --tail 40 || true
+          docker rm -f hg-api hg-web || true

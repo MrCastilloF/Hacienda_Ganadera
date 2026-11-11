@@ -47,8 +47,6 @@ jobs:
           if [ -f package.json ] && [ -d tests/e2e ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
       - uses: pnpm/action-setup@v4
         if: steps.detect.outputs.present == 'true'
-        with:
-          version: 9
       - uses: actions/setup-node@v4
         if: steps.detect.outputs.present == 'true'
         with:

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-campo-100 text-campo-950 antialiased;
+}
+
+/* Foco siempre visible: requisito de accesibilidad en campo (RNF-USA-01). */
+:focus-visible {
+  outline: 3px solid #256a49;
+  outline-offset: 2px;
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Hacienda Ganadera",
+  "short_name": "Hacienda",
+  "description": "Administración, trazabilidad y monitoreo de una hacienda ganadera",
+  "lang": "es-CO",
+  "start_url": "/panel",
+  "display": "standalone",
+  "background_color": "#e6f0ea",
+  "theme_color": "#0b1f16",
+  "icons": []
+}

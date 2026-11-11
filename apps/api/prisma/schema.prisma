@@ -1,0 +1,194 @@
+// Esquema de Prisma para el dominio de la Fase 1.
+//
+// IMPORTANTE (ADR-0002): este archivo NO es la fuente de verdad del esquema.
+// La fuente de verdad son las migraciones SQL de infra/postgres/migrations.
+// Prisma se usa como cliente tipado; `prisma migrate` y `prisma db push` están
+// prohibidos sobre entornos con datos.
+//
+// Las tablas de trazabilidad (audit_log, evento_dominio, outbox,
+// idempotency_record) se manipulan con SQL tipado porque usan particiones,
+// funciones y triggers que Prisma no modela.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["app", "public"]
+}
+
+model Finca {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String?   @map("tenant_id") @db.Uuid
+  codigo                  String    @unique
+  nombre                  String
+  propietario             String?
+  identificacionTributaria String?  @map("identificacion_tributaria")
+  direccion               String?
+  zonaHoraria             String    @default("America/Bogota") @map("zona_horaria")
+  moneda                  String    @default("COP") @db.Char(3)
+  unidadPeso              String    @default("kg") @map("unidad_peso")
+  activa                  Boolean   @default(true)
+  createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  createdBy               String?   @map("created_by") @db.Uuid
+  updatedBy               String?   @map("updated_by") @db.Uuid
+  deletedAt               DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  usuarios UsuarioFinca[]
+
+  @@map("finca")
+  @@schema("app")
+}
+
+model Usuario {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String?   @map("tenant_id") @db.Uuid
+  email              String
+  passwordHash       String    @map("password_hash")
+  nombre             String
+  cargo              String?
+  activo             Boolean   @default(true)
+  mfaHabilitado      Boolean   @default(false) @map("mfa_habilitado")
+  mfaSecretEnc       String?   @map("mfa_secret_enc")
+  intentosFallidos   Int       @default(0) @map("intentos_fallidos")
+  bloqueadoHasta     DateTime? @map("bloqueado_hasta") @db.Timestamptz(6)
+  ultimoAccesoAt     DateTime? @map("ultimo_acceso_at") @db.Timestamptz(6)
+  passwordCambiadaAt DateTime  @default(now()) @map("password_cambiada_at") @db.Timestamptz(6)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  createdBy          String?   @map("created_by") @db.Uuid
+  updatedBy          String?   @map("updated_by") @db.Uuid
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  roles    UsuarioRol[]
+  fincas   UsuarioFinca[]
+  sesiones Sesion[]
+
+  @@index([activo], map: "ix_usuario_activo")
+  @@map("usuario")
+  @@schema("app")
+}
+
+model Rol {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  codigo      String   @unique
+  nombre      String
+  descripcion String?
+  sistema     Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  permisos RolePermiso[]
+  usuarios UsuarioRol[]
+
+  @@map("rol")
+  @@schema("app")
+}
+
+model Permiso {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  codigo      String   @unique
+  modulo      String
+  operacion   String
+  descripcion String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  roles RolePermiso[]
+
+  @@index([modulo], map: "ix_permiso_modulo")
+  @@map("permiso")
+  @@schema("app")
+}
+
+model RolePermiso {
+  rolId     String @map("rol_id") @db.Uuid
+  permisoId String @map("permiso_id") @db.Uuid
+  alcance   String @default("finca")
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId, alcance])
+  @@map("rol_permiso")
+  @@schema("app")
+}
+
+model UsuarioRol {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuarioId String   @map("usuario_id") @db.Uuid
+  rolId     String   @map("rol_id") @db.Uuid
+  fincaId   String?  @map("finca_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy String?  @map("created_by") @db.Uuid
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Restrict)
+
+  @@map("usuario_rol")
+  @@schema("app")
+}
+
+model UsuarioFinca {
+  usuarioId       String  @map("usuario_id") @db.Uuid
+  fincaId         String  @map("finca_id") @db.Uuid
+  esPredeterminada Boolean @default(false) @map("es_predeterminada")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+  finca   Finca   @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+
+  @@id([usuarioId, fincaId])
+  @@map("usuario_finca")
+  @@schema("app")
+}
+
+model Sesion {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuarioId         String    @map("usuario_id") @db.Uuid
+  refreshFamily     String    @map("refresh_family") @db.Uuid
+  refreshHash       String    @unique @map("refresh_hash")
+  userAgent         String?   @map("user_agent")
+  ip                String?
+  creadaAt          DateTime  @default(now()) @map("creada_at") @db.Timestamptz(6)
+  expiraAt          DateTime  @map("expira_at") @db.Timestamptz(6)
+  revocadaAt        DateTime? @map("revocada_at") @db.Timestamptz(6)
+  reemplazadaPor    String?   @map("reemplazada_por") @db.Uuid
+  motivoRevocacion  String?   @map("motivo_revocacion")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+
+  @@index([usuarioId, creadaAt(sort: Desc)], map: "ix_sesion_usuario")
+  @@index([refreshFamily], map: "ix_sesion_family")
+  @@map("sesion")
+  @@schema("app")
+}
+
+model IntentoLogin {
+  id        BigInt   @id @default(autoincrement())
+  email     String
+  ip        String?
+  exito     Boolean
+  motivo    String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+
+  @@map("intento_login")
+  @@schema("app")
+}
+
+model Configuracion {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId       String?   @map("finca_id") @db.Uuid
+  clave         String
+  valorJson     Json      @map("valor_json")
+  version       Int       @default(1)
+  vigenteDesde  DateTime  @default(now()) @map("vigente_desde") @db.Timestamptz(6)
+  vigenteHasta  DateTime? @map("vigente_hasta") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy     String?   @map("created_by") @db.Uuid
+
+  @@map("configuracion")
+  @@schema("app")
+}

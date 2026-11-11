@@ -4,6 +4,13 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.5.1] — 2026-11-11
+
+### Corregido
+- **Clave duplicada en el seed**: la matriz de permisos ya tenía `salud` y se agregó una segunda entrada, lo
+  que rompía el lint (`no-dupe-keys`) y con ello el job de calidad. La v0.5.0 se etiquetó con ese fallo; esta
+  versión lo corrige. Detectado al revisar por qué el lint fallaba después de publicar.
+
 ## [0.5.0] — 2026-11-11 · Fase 5 (primer corte)
 
 ### Agregado

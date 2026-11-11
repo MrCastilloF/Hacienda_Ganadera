@@ -4,6 +4,13 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.3.1] — 2026-11-11
+
+### Corregido
+- **La imagen Docker de la API no compilaba**: el Dockerfile copiaba `apps/api` pero no `packages/`, así que
+  el paquete compartido `@hacienda/scale-protocols` no existía dentro del contenedor. Lo detectó la
+  construcción de la imagen en el release, no la revisión.
+
 ## [0.3.0] — 2026-11-11 · Fase 3 (núcleo sin hardware)
 
 ### Agregado

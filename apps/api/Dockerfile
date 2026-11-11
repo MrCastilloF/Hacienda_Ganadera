@@ -27,6 +27,8 @@ COPY apps/web/package.json ./apps/web/package.json
 RUN pnpm install --frozen-lockfile
 
 COPY apps/api ./apps/api
+# Paquetes compartidos del workspace (protocolos de báscula, dominio reutilizable).
+COPY packages ./packages
 COPY infra ./infra
 COPY scripts ./scripts
 

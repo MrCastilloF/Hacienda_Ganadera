@@ -48,9 +48,10 @@ valida estructura, enlaces y ausencia de secretos.
 | 8 | Pruebas: matriz de autorización, inmutabilidad, cadena de auditoría |
 | 9 | `make verify` verde y release `v0.1.0` |
 
-**Estado: entregada.** Evidencia: migraciones aplicadas desde cero, 22 pruebas de integración contra
-PostgreSQL real (incluye detección de manipulación de la auditoría y privilegios del rol `app_rw`), web
-operativa con ingreso real y OpenAPI con 19 rutas exportado en `docs/api/openapi.json`.
+**Estado: entregada.** Evidencia: migraciones aplicadas desde cero; 45 pruebas (15 unitarias y 30 de
+integración contra PostgreSQL real, incluidas detección de manipulación de la auditoría, privilegios del rol
+`app_rw` y el flujo TOTP completo); web operativa con ingreso real; PWA instalable con service worker y
+pantalla offline; OpenAPI con 19 rutas en `docs/api/openapi.json`; CI en verde y release publicado.
 
 ---
 

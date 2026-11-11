@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hacienda Ganadera">
+  <rect width="512" height="512" fill="#0b1f16"/>
+  <g fill="#e6f0ea">
+    <rect x="116" y="132" width="56" height="252"/>
+    <rect x="340" y="132" width="56" height="252"/>
+    <rect x="172" y="230" width="168" height="56"/>
+  </g>
+  <rect x="116" y="424" width="280" height="20" fill="#a9714b"/>
+</svg>

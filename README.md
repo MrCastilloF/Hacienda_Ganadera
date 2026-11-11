@@ -13,8 +13,8 @@ preparada para despliegue híbrido o en nube, y usable desde computador, tableta
 
 > **Estado actual: Fase 1 — plataforma base funcionando.**
 > Ya se puede arrancar, iniciar sesión y operar: API con autenticación (JWT RS256 + refresh rotativo +
-> MFA TOTP), RBAC con alcance, auditoría encadenada verificable, web operativa y 37 pruebas automatizadas
-> en verde. Los módulos de animales y pesajes llegan en las fases 2–4.
+> MFA TOTP), RBAC con alcance, auditoría encadenada verificable, web operativa, PWA instalable con pantalla
+> offline y 45 pruebas automatizadas en verde. Los módulos de animales y pesajes llegan en las fases 2–4.
 
 ---
 

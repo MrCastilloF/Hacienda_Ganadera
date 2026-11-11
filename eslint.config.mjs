@@ -61,6 +61,24 @@ export default defineConfig([
     },
   },
   {
+    // Service worker: corre en un contexto con APIs propias del navegador.
+    files: ['**/public/sw.js'],
+    languageOptions: {
+      globals: {
+        self: 'readonly',
+        caches: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
+      },
+    },
+    rules: {
+      'no-undef': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
     files: ['**/*.spec.ts', '**/tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

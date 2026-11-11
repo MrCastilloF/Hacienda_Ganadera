@@ -4,6 +4,22 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.1.1] — 2026-11-11
+
+### Agregado
+- **PWA completa**: manifest con cuatro iconos (incluido *maskable*), iconos PNG generados sin dependencias
+  por `scripts/dev/generate-icons.mjs`, service worker con precarga del shell, pantalla `/offline` honesta
+  y registro del service worker solo en producción.
+- **Pruebas de segundo factor**: 8 pruebas de integración del flujo TOTP completo (iniciar, confirmar,
+  exigir código, rechazar código inválido, desactivar), sobre 45 pruebas en total.
+
+### Corregido
+- **La imagen Docker de la API no se construía**: el job usaba `./apps/api` como contexto (los Dockerfiles
+  necesitan la raíz del monorepo) y el nombre de la imagen conservaba mayúsculas, que ghcr.io rechaza.
+  También se agregó caché de capas por servicio.
+- Aviso de ESLint por el comentario `eslint-env` en el service worker (los globales se declaran en la
+  configuración).
+
 ## [0.1.0] — 2026-11-11 · Fase 1
 
 ### Agregado

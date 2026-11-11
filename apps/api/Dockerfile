@@ -15,7 +15,7 @@ ENV PNPM_HOME=/pnpm \
 RUN corepack enable && corepack prepare pnpm@12.10.1 --activate
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 COPY apps/api/package.json ./apps/api/package.json
 COPY apps/web/package.json ./apps/web/package.json
 

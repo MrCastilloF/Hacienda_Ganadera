@@ -4,6 +4,13 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.1.2] — 2026-11-11
+
+### Corregido
+- **Build de la imagen de la API**: el Dockerfile no copiaba `tsconfig.base.json`, de modo que `tsc` corría
+  sin `skipLibCheck` ni `esModuleInterop` y fallaba al tipar los tipos de dependencias (zod). La imagen de
+  la web ya se construía correctamente.
+
 ## [0.1.1] — 2026-11-11
 
 ### Agregado

@@ -4,6 +4,36 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.2.0] — 2026-11-11 · Fase 2
+
+### Agregado
+- **Ficha única del animal** con identificación (arete, código de barras, RFID, identificación oficial),
+  datos biológicos, condición corporal, lote y observaciones.
+- **Numeración de aretes configurable** (prefijo + consecutivo + dígito de verificación alfanumérico).
+  Si no se envía arete, se genera; el código de barras se deriva del arete.
+- **Historial de identificadores** con prohibición de reutilización: un arete retirado conserva su historia.
+- **Máquina de estados** (activo, cuarentena, enfermo, vendido, fallecido, sacrificado, trasladado) con
+  transiciones validadas, motivo obligatorio y estados terminales sin salida.
+- **Genealogía** con validaciones: madre hembra, padre macho, fechas coherentes, sin ciclos (la base
+  refuerza sexo y fechas con trigger; el dominio impide ciclos y devuelve error de negocio).
+- **Categoría derivada** (ternero/ternera, novillo/novilla, ceba, vaca, toro) calculada en SQL y en el
+  dominio con **el mismo criterio**, verificado por una prueba de equivalencia.
+- **Búsqueda y filtros** por arete, código de barras, nombre, estado y categoría, con paginación.
+- **Importador de hato** con validación previa (`dryRun`), errores por línea y campo, importación
+  transaccional todo-o-nada y enlace de genealogía por arete.
+- **Interfaz web**: listado con filtros y ficha con genealogía, historial de estados e identificadores.
+- **Catálogos** de razas, categorías, lotes y estados.
+- 54 pruebas de integración y 36 unitarias (90 en total).
+
+### Corregido (defectos encontrados al ejecutar)
+- El **dígito de verificación devolvía `NaN`** con prefijos alfanuméricos: solo contemplaba dígitos.
+- La **edad se calculaba con días/30,4375**, lo que desviaba los límites de 12 y 24 meses y clasificaba
+  mal a los animales: ahora es meses calendario, en TypeScript y en SQL.
+- La validación de fechas de progenitores dependía solo del trigger y devolvía 500; ahora es un 400 de
+  negocio con mensaje claro.
+- El módulo de animales no estaba registrado en el módulo raíz (las rutas devolvían 404).
+- Las pruebas no eran idempotentes: los datos residuales de una ejecución fallida rompían la siguiente.
+
 ## [0.1.5] — 2026-11-11
 
 ### Corregido

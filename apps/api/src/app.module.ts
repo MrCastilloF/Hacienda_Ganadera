@@ -6,6 +6,7 @@ import { RbacModule } from './rbac/rbac.module';
 import { AuthModule } from './auth/auth.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { FincasModule } from './fincas/fincas.module';
+import { AnimalesModule } from './animales/animales.module';
 import { HealthController } from './health/health.controller';
 import { RequestContextMiddleware } from './common/request-context.middleware';
 import { GlobalExceptionFilter } from './common/exception.filter';
@@ -28,6 +29,7 @@ import { AuditInterceptor } from './audit/audit.interceptor';
     AuthModule,
     UsuariosModule,
     FincasModule,
+    AnimalesModule,
   ],
   controllers: [HealthController],
   providers: [GlobalExceptionFilter, AuditInterceptor],

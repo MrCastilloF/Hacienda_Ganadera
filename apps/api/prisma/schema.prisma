@@ -42,6 +42,8 @@ model Finca {
   deletedAt               DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   usuarios UsuarioFinca[]
+  lotes    Lote[]
+  animales Animal[]
 
   @@map("finca")
   @@schema("app")
@@ -194,5 +196,140 @@ model Configuracion {
   createdBy     String?   @map("created_by") @db.Uuid
 
   @@map("configuracion")
+  @@schema("app")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Fase 2 · Animales
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Raza {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  codigo    String   @unique
+  nombre    String
+  especie   String   @default("BOVINO")
+  origen    String?
+  activo    Boolean  @default(true)
+  source    String   @default("SEED")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  animales Animal[]
+
+  @@map("raza")
+  @@schema("app")
+}
+
+model CategoriaAnimal {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  codigo       String   @unique
+  nombre       String
+  sexo         String
+  edadMinMeses Int?     @map("edad_min_meses")
+  edadMaxMeses Int?     @map("edad_max_meses")
+  orden        Int      @default(0)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("categoria_animal")
+  @@schema("app")
+}
+
+model Lote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId   String   @map("finca_id") @db.Uuid
+  codigo    String
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  finca    Finca    @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+  animales Animal[]
+
+  @@unique([fincaId, codigo])
+  @@map("lote")
+  @@schema("app")
+}
+
+model Animal {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId                String    @map("finca_id") @db.Uuid
+  arete                  String
+  codigoBarras           String    @map("codigo_barras")
+  rfid                   String?
+  nombre                 String?
+  sexo                   String
+  fechaNacimiento        DateTime? @map("fecha_nacimiento") @db.Date
+  pesoNacimientoKg       Decimal?  @map("peso_nacimiento_kg") @db.Decimal(8, 2)
+  razaId                 String?   @map("raza_id") @db.Uuid
+  cruceRacial            String?   @map("cruce_racial")
+  color                  String?
+  caracteristicas        String?
+  procedencia            String?
+  madreId                String?   @map("madre_id") @db.Uuid
+  padreId                String?   @map("padre_id") @db.Uuid
+  tipoNacimiento         String?   @map("tipo_nacimiento")
+  estado                 String    @default("activo")
+  estadoProductivo       String?   @map("estado_productivo")
+  condicionCorporal      Int?      @map("condicion_corporal") @db.SmallInt
+  loteId                 String?   @map("lote_id") @db.Uuid
+  corral                 String?
+  identificacionOficial  String?   @map("identificacion_oficial")
+  observaciones          String?
+  version                Int       @default(1)
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  createdBy              String?   @map("created_by") @db.Uuid
+  updatedBy              String?   @map("updated_by") @db.Uuid
+  deletedAt              DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  finca           Finca                   @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+  raza            Raza?                   @relation(fields: [razaId], references: [id], onDelete: Restrict)
+  lote            Lote?                   @relation(fields: [loteId], references: [id], onDelete: Restrict)
+  madre           Animal?                 @relation("Madre", fields: [madreId], references: [id], onDelete: Restrict)
+  padre           Animal?                 @relation("Padre", fields: [padreId], references: [id], onDelete: Restrict)
+  criasComoMadre  Animal[]                @relation("Madre")
+  criasComoPadre  Animal[]                @relation("Padre")
+  identificaciones AnimalIdentificacion[]
+  estados         AnimalEstadoHistorial[]
+
+  @@unique([fincaId, arete], map: "uq_animal_finca_arete")
+  @@unique([codigoBarras], map: "uq_animal_codigo_barras")
+  @@index([fincaId, estado], map: "ix_animal_finca_estado")
+  @@map("animal")
+  @@schema("app")
+}
+
+model AnimalIdentificacion {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  animalId      String    @map("animal_id") @db.Uuid
+  tipo          String
+  valor         String
+  vigenteDesde  DateTime  @default(now()) @map("vigente_desde") @db.Timestamptz(6)
+  vigenteHasta  DateTime? @map("vigente_hasta") @db.Timestamptz(6)
+  estado        String    @default("active")
+  motivo        String?
+  createdBy     String?   @map("created_by") @db.Uuid
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Restrict)
+
+  @@index([animalId], map: "ix_ident_animal")
+  @@map("animal_identificacion")
+  @@schema("app")
+}
+
+model AnimalEstadoHistorial {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  animalId       String   @map("animal_id") @db.Uuid
+  estadoAnterior String?  @map("estado_anterior")
+  estadoNuevo    String   @map("estado_nuevo")
+  motivo         String?
+  actorId        String?  @map("actor_id") @db.Uuid
+  occurredAt     DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Restrict)
+
+  @@index([animalId], map: "ix_estado_animal")
+  @@map("animal_estado_historial")
   @@schema("app")
 }

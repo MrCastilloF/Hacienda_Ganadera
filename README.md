@@ -166,8 +166,8 @@ Detalle en [`ROADMAP.md`](ROADMAP.md).
 |---|---|---|
 | **F0** | Validación, especificación v2, arquitectura, repositorio y CI | ✅ entregado |
 | **F1** | Docker, PostgreSQL, backend, seguridad, autenticación, RBAC y auditoría encadenada | ✅ entregado |
-| **F2** | Animales, identificación, usuarios, roles e inventario | ⏳ siguiente |
-| **F3** | Báscula, códigos de barras y Local Bridge | pendiente |
+| **F2** | Animales, identificación, genealogía e importación del hato | ✅ entregada |
+| **F3** | Báscula, códigos de barras y Local Bridge | ⏳ siguiente |
 | **F4** | Pesajes, crecimiento y reportes | pendiente |
 | **F5** | Veterinaria y salud | pendiente |
 | **F6** | Reproducción, nacimientos y genética | pendiente |

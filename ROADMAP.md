@@ -55,13 +55,15 @@ pantalla offline; OpenAPI con 19 rutas en `docs/api/openapi.json`; CI en verde y
 
 ---
 
-## F2 · Animales, identificación, usuarios e inventario
+## F2 · Animales, identificación e inventario ✅
 
 Ficha única, identificación y numeración, genealogía con validaciones, estados y transiciones, inventario y
 categorías derivadas, permisos por rol aplicados a cada módulo, importador de hato existente (`RF-IMP-01`…`06`).
 
-**Criterio:** un animal no puede quedar en estado inconsistente ni con genealogía imposible, y el inventario
-cuadra tras 50 operaciones mezcladas.
+**Estado: entregada (núcleo).** Evidencia: 21 pruebas nuevas de dominio y 16 de integración que cubren
+unicidad de aretes, numeración, máquina de estados, genealogía sin ciclos, categoría derivada idéntica en
+SQL y TypeScript, importación transaccional y permisos. Inventario y categorías por lote se completan en la
+Fase 7 junto con potreros y movimientos.
 
 ---
 

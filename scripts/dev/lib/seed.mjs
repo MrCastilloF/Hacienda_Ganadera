@@ -197,6 +197,48 @@ export async function runSeed({ databaseUrl, silent = false } = {}) {
       }
     }
 
+    // ── Catálogos de animales (Fase 2) ───────────────────────────────────────
+    // Las razas se siembran como SUGERIDAS: el negocio debe validarlas
+    // (docs/01 §15). No se inventan datos clínicos ni productivos.
+    const RAZAS = [
+      ['BRAHMAN', 'Brahman', 'BOVINO'],
+      ['NELORE', 'Nelore', 'BOVINO'],
+      ['ANGUS', 'Angus', 'BOVINO'],
+      ['HOLSTEIN', 'Holstein', 'BOVINO'],
+      ['GYR', 'Gyr', 'BOVINO'],
+      ['SIMMENTAL', 'Simmental', 'BOVINO'],
+      ['CRUCE', 'Cruce comercial', 'BOVINO'],
+      ['BUFALO', 'Búfalo de agua', 'BUFALINO'],
+    ];
+    for (const [codigo, nombre, especie] of RAZAS) {
+      await client.query(
+        `INSERT INTO app.raza (codigo, nombre, especie, source)
+         VALUES ($1, $2, $3, 'SEED')
+         ON CONFLICT (codigo) DO NOTHING`,
+        [codigo, nombre, especie],
+      );
+    }
+
+    const CATEGORIAS = [
+      ['TERNERO', 'Ternero', 'MACHO', 0, 12, 10],
+      ['TERNERA', 'Ternera', 'HEMBRA', 0, 12, 11],
+      ['NOVILLO', 'Novillo', 'MACHO', 12, 24, 20],
+      ['NOVILLA', 'Novilla', 'HEMBRA', 12, 24, 21],
+      ['CEBA', 'Ceba', 'MACHO', 24, null, 30],
+      ['VACA', 'Vaca', 'HEMBRA', 24, null, 31],
+      ['TORO', 'Toro', 'MACHO', 24, null, 32],
+    ];
+    for (const [codigo, nombre, sexo, min, max, orden] of CATEGORIAS) {
+      await client.query(
+        `INSERT INTO app.categoria_animal (codigo, nombre, sexo, edad_min_meses, edad_max_meses, orden)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (codigo) DO UPDATE
+           SET nombre = EXCLUDED.nombre, edad_min_meses = EXCLUDED.edad_min_meses,
+               edad_max_meses = EXCLUDED.edad_max_meses, orden = EXCLUDED.orden`,
+        [codigo, nombre, sexo, min, max, orden],
+      );
+    }
+
     // ── Finca ────────────────────────────────────────────────────────────────
     const finca = await client.query(
       `INSERT INTO app.finca (codigo, nombre, zona_horaria, moneda, unidad_peso)
@@ -206,6 +248,17 @@ export async function runSeed({ databaseUrl, silent = false } = {}) {
       [FINCA_CODIGO, FINCA_NOMBRE],
     );
     const fincaId = finca.rows[0].id;
+
+    // ── Numeración de aretes (RF-ANI-10) ─────────────────────────────────────
+    // Se siembra una configuración por defecto editable por el administrador.
+    await client.query(
+      `INSERT INTO app.configuracion (finca_id, clave, valor_json)
+       SELECT $1, 'numeracion_arete',
+              jsonb_build_object('prefijo', codigo, 'longitud', 6, 'siguiente', 1, 'digitoVerificacion', true)
+       FROM app.finca WHERE id = $1
+       ON CONFLICT DO NOTHING`,
+      [fincaId],
+    );
 
     // ── Usuario administrador ────────────────────────────────────────────────
     const existente = await client.query('SELECT id FROM app.usuario WHERE lower(email) = lower($1)', [ADMIN_EMAIL]);

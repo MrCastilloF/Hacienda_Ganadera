@@ -418,6 +418,258 @@
           "fincas"
         ]
       }
+    },
+    "/api/v1/animales": {
+      "get": {
+        "operationId": "animales_listar",
+        "parameters": [
+          {
+            "name": "categoria",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Busca por arete, código de barras o nombre",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista animales con filtros y categoría derivada",
+        "tags": [
+          "animales"
+        ]
+      },
+      "post": {
+        "operationId": "animales_crear",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra un animal. Si no se envía arete, se genera con el esquema configurado",
+        "tags": [
+          "animales"
+        ]
+      }
+    },
+    "/api/v1/animales/{id}": {
+      "get": {
+        "operationId": "animales_ficha",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Ficha completa del animal con genealogía e historial",
+        "tags": [
+          "animales"
+        ]
+      },
+      "patch": {
+        "operationId": "animales_actualizar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Modifica datos descriptivos con control de versión (concurrencia optimista)",
+        "tags": [
+          "animales"
+        ]
+      }
+    },
+    "/api/v1/animales/{id}/genealogia": {
+      "get": {
+        "operationId": "animales_genealogia",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Árbol genealógico ascendente y descendente",
+        "tags": [
+          "animales"
+        ]
+      }
+    },
+    "/api/v1/animales/{id}/estado": {
+      "post": {
+        "description": "Un estado terminal (vendido, fallecido, sacrificado) no admite salida. Las transiciones a cuarentena, enfermo, vendido, fallecido, sacrificado o trasladado exigen motivo.",
+        "operationId": "animales_cambiarEstado",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Transita el estado del animal (máquina de estados, con historial y auditoría)",
+        "tags": [
+          "animales"
+        ]
+      }
+    },
+    "/api/v1/animales/importar/plantilla": {
+      "get": {
+        "operationId": "animales_plantilla",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Plantilla CSV para la carga del hato existente",
+        "tags": [
+          "animales"
+        ]
+      }
+    },
+    "/api/v1/animales/importar": {
+      "post": {
+        "description": "Con dryRun=true valida y muestra lo que haría sin escribir nada. La importación real es todo o nada: si alguna fila es inválida, no se crea ningún animal.",
+        "operationId": "animales_importar",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Importa el hato desde CSV (validación previa obligatoria)",
+        "tags": [
+          "animales"
+        ]
+      }
+    },
+    "/api/v1/catalogos/razas": {
+      "get": {
+        "operationId": "catalogos_razas",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Razas activas (marcadas como sembradas hasta validación del negocio)",
+        "tags": [
+          "catálogos"
+        ]
+      }
+    },
+    "/api/v1/catalogos/categorias": {
+      "get": {
+        "operationId": "catalogos_categorias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Categorías del hato (la categoría del animal es derivada, no editable)",
+        "tags": [
+          "catálogos"
+        ]
+      }
+    },
+    "/api/v1/catalogos/lotes": {
+      "get": {
+        "operationId": "catalogos_lotes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lotes de la finca",
+        "tags": [
+          "catálogos"
+        ]
+      }
+    },
+    "/api/v1/catalogos/estados": {
+      "get": {
+        "operationId": "catalogos_estados",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estados del animal y sus transiciones posibles",
+        "tags": [
+          "catálogos"
+        ]
+      }
     }
   },
   "info": {

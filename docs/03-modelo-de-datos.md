@@ -203,6 +203,21 @@ Leyenda de la columna **Clase**: `M` = maestra/catálogo, `T` = transaccional, `
 
 **Total:** 68 tablas + particiones mensuales de `posicion`/`telemetria` y anuales de `evento_dominio`/`audit_log`.
 
+### 3.11 Animales (Fase 2)
+
+| Tabla | Clase | Propósito |
+|---|---|---|
+| `raza` | M | Catálogo de razas; las sembradas se marcan `source = 'SEED'` hasta validación del negocio |
+| `categoria_animal` | M | Categorías del hato; la del animal es **derivada**, no un campo |
+| `lote` | M | Agrupación operativa por finca |
+| `animal` | T | Ficha única; arete único por finca, código de barras único global, genealogía con FK |
+| `animal_identificacion` | R | Historial de identificadores; uno retirado no se reutiliza (índice único parcial) |
+| `animal_estado_historial` | E | Transiciones de estado, append-only |
+
+Funciones y vistas: `app.edad_meses`, `app.categoria_de` y `app.v_animal_resumen` (lectura con edad y
+categoría calculadas). La regla de categoría debe coincidir con `apps/api/src/animales/domain/categoria.ts`;
+hay una prueba que lo verifica.
+
 ---
 
 ## 4. DDL de referencia (tablas críticas)

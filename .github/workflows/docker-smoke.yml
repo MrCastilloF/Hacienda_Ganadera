@@ -88,7 +88,11 @@ jobs:
 
       - name: Verificar que la aplicación no corre como root
         run: |
-          UID_APP="$(docker exec hg-api id -u)"
+          # `docker exec` crea un proceso nuevo con el usuario por defecto de la
+          # imagen, así que se inspecciona el PID 1 real (el que ejecuta la API).
+          STATUS="$(docker exec hg-api cat /proc/1/status)"
+          echo "$STATUS" | grep -E '^(Name|Uid|Gid):'
+          UID_APP="$(echo "$STATUS" | awk '/^Uid:/ {print $2}')"
           echo "UID del proceso de la aplicación: ${UID_APP}"
           test "${UID_APP}" != "0"
 

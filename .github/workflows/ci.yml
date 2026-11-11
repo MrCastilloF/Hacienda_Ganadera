@@ -98,7 +98,7 @@ jobs:
         run: |
           if [ -f package.json ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         if: steps.detect.outputs.present == 'true'
 
       - uses: actions/setup-node@v4

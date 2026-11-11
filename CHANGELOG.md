@@ -4,6 +4,22 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.4.0] — 2026-11-11 · Fase 4 (núcleo)
+
+### Agregado
+- **Crecimiento y ganancia diaria de peso (GDP)** sobre pesajes reales: excluye duplicados y anulados, calcula
+  tramos entre pesajes consecutivos y clasifica cada animal frente al rango esperado de su categoría.
+- **Rangos de GDP por categoría declarados** (ternero 0,4–0,8 · novillo 0,5–0,9 · ceba 0,8–1,4 · vaca/toro
+  0–0,3 kg/día) como supuesto cuestionable, no como verdad zootécnica.
+- **Reporte de crecimiento por finca** con los animales de crecimiento bajo primero —son los que exigen acción—
+  y filtro `soloBajo`.
+- **Curva de peso por animal** con tramos, proyección lineal y advertencia explícita de que es una extrapolación.
+- 12 pruebas unitarias del dominio de crecimiento.
+
+### Decisiones
+- Un intervalo menor a 7 días se marca **INSUFICIENTE**: el error de la báscula pesa más que la ganancia real.
+- Sin dos pesajes no hay GDP: no se extrapola ni se interpola.
+"""
 ## [0.3.3] — 2026-11-11
 
 ### Agregado

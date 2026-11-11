@@ -80,7 +80,7 @@ pantalla de pesaje y 14 pruebas de integración.
 
 ---
 
-## F4 · Pesajes, crecimiento y reportes
+## F4 · Pesajes, crecimiento y reportes ⏳ en curso
 
 Curva de crecimiento, GDP, comparaciones, alertas de variación, deduplicación, reportes de pesaje exportables.
 

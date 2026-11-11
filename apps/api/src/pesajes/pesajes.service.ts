@@ -204,6 +204,54 @@ export class PesajesService {
     };
   }
 
+
+  /**
+   * Anula un pesaje con motivo (evento compensatorio).
+   *
+   * El pesaje original permanece visible: no se borra ni se modifica. Solo deja
+   * de contar en los cálculos de crecimiento, y la anulación queda auditada con
+   * su responsable y su razón.
+   */
+  async anular(pesajeId: string, motivo: string, actorId: string): Promise<{
+    id: string;
+    anulado: true;
+    motivo: string;
+    occurredAt: Date;
+  }> {
+    const pesaje = await this.prisma.pesaje.findUnique({
+      where: { id: pesajeId },
+      select: { id: true, animalId: true, pesoKg: true, anulacion: { select: { id: true } } },
+    });
+    if (!pesaje) throw AppError.notFound('Pesaje no encontrado');
+
+    if (pesaje.anulacion) {
+      throw AppError.conflict('El pesaje ya estaba anulado');
+    }
+
+    const anulacion = await this.prisma.$transaction(async (tx) => {
+      const creada = await tx.pesajeAnulacion.create({
+        data: { pesajeId, motivo: motivo.trim(), actorId },
+        select: { id: true, motivo: true, occurredAt: true },
+      });
+
+      await this.audit.record(
+        {
+          action: 'pesajes.anular',
+          entity: 'pesaje',
+          entityId: pesajeId,
+          actorId,
+          before: { pesoKg: Number(pesaje.pesoKg) },
+          after: { anulacionId: creada.id, motivo: creada.motivo },
+        },
+        tx,
+      );
+
+      return creada;
+    });
+
+    return { id: anulacion.id, anulado: true, motivo: anulacion.motivo, occurredAt: anulacion.occurredAt };
+  }
+
   async listar(filtros: {
     animalId?: string;
     fincaId?: string;
@@ -232,7 +280,11 @@ export class PesajesService {
         orderBy: { ocurridoAt: 'desc' },
         skip: filtros.offset,
         take: filtros.limit,
-        include: { animal: { select: { arete: true } }, bascula: { select: { nombre: true } } },
+        include: {
+          animal: { select: { arete: true } },
+          bascula: { select: { nombre: true } },
+          anulacion: { select: { motivo: true, occurredAt: true } },
+        },
       }),
     ]);
 
@@ -248,6 +300,8 @@ export class PesajesService {
         origen: p.origen,
         bascula: p.bascula?.nombre ?? null,
         duplicado: Boolean(p.duplicateOf),
+        anulado: p.anulacion !== null,
+        motivoAnulacion: p.anulacion?.motivo ?? null,
         edadDias: p.edadDias,
       })),
     };

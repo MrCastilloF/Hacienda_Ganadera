@@ -37,6 +37,10 @@ const ListadoQuery = z.object({
   offset: z.coerce.number().int().min(0).default(0),
 });
 
+const AnularSchema = z.object({
+  motivo: z.string().min(5, 'El motivo debe explicar la anulación').max(300),
+});
+
 const IdParam = z.object({ id: z.string().uuid('Identificador inválido') });
 
 @ApiTags('pesajes')
@@ -82,6 +86,24 @@ export class PesajesController {
       { ...input, idempotencyKey: input.idempotencyKey ?? randomUUID() },
       user.sub,
     );
+  }
+
+
+  @Post(':id/anular')
+  @Require('pesajes', 'anular')
+  @ApiOperation({
+    summary: 'Anula un pesaje con motivo (evento compensatorio)',
+    description:
+      'El pesaje no se borra ni se modifica: se anula con un motivo de al menos 5 caracteres y queda auditado. Una segunda anulación del mismo pesaje devuelve 409.',
+  })
+  async anular(
+    @Param() params: Record<string, string>,
+    @Body() body: unknown,
+    @CurrentUser() user: AccessTokenPayload,
+  ) {
+    const { id } = parseParams(IdParam, params);
+    const { motivo } = parseBody(AnularSchema, body);
+    return this.pesajes.anular(id, motivo, user.sub);
   }
 
   @Post('simulado')

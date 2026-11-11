@@ -76,10 +76,23 @@ describe('pesajes y básculas (integración)', () => {
     const ids = animales.map((a) => a.id);
     if (ids.length > 0) {
       await contexto.prisma.$executeRawUnsafe('ALTER TABLE app.pesaje DISABLE TRIGGER trg_pesaje_immutable');
+      await contexto.prisma.$executeRawUnsafe(
+        'ALTER TABLE app.pesaje_anulacion DISABLE TRIGGER trg_pesaje_anulacion_immutable',
+      );
       try {
+        const pesajes = await contexto.prisma.pesaje.findMany({
+          where: { animalId: { in: ids } },
+          select: { id: true },
+        });
+        await contexto.prisma.pesajeAnulacion.deleteMany({
+          where: { pesajeId: { in: pesajes.map((p) => p.id) } },
+        });
         await contexto.prisma.pesaje.deleteMany({ where: { animalId: { in: ids } } });
       } finally {
         await contexto.prisma.$executeRawUnsafe('ALTER TABLE app.pesaje ENABLE TRIGGER trg_pesaje_immutable');
+        await contexto.prisma.$executeRawUnsafe(
+          'ALTER TABLE app.pesaje_anulacion ENABLE TRIGGER trg_pesaje_anulacion_immutable',
+        );
       }
       await contexto.prisma.animalIdentificacion.deleteMany({ where: { animalId: { in: ids } } });
       await contexto.prisma.$executeRawUnsafe(
@@ -279,11 +292,60 @@ describe('pesajes y básculas (integración)', () => {
     await ctx.prisma.bascula.deleteMany({ where: { nombre: 'Báscula de marca desconocida' } });
   });
 
+
+  it('anula un pesaje con motivo y deja rastro', async () => {
+    const animal = await post(
+      ctx,
+      '/api/v1/animales',
+      { fincaId, arete: 'PES-0004', sexo: 'HEMBRA', fechaNacimiento: '2024-06-01' },
+      token,
+    );
+
+    const pesaje = await post(
+      ctx,
+      '/api/v1/pesajes',
+      { animalId: animal.body.id, pesoKg: 300, origen: 'MANUAL' },
+      token,
+    );
+    expect(pesaje.status).toBe(201);
+
+    const anulacion = await post(
+      ctx,
+      `/api/v1/pesajes/${pesaje.body.id}/anular`,
+      { motivo: 'Peso mal leído: el animal se movió' },
+      token,
+    );
+    expect(anulacion.status).toBe(201);
+    expect(anulacion.body.anulado).toBe(true);
+
+    // El pesaje sigue existiendo, marcado como anulado.
+    const historial = await get(ctx, `/api/v1/pesajes/animal/${animal.body.id}`, token);
+    const fila = historial.body.items.find((p: { id: string }) => p.id === pesaje.body.id);
+    expect(fila).toBeDefined();
+    expect(fila.anulado).toBe(true);
+    expect(fila.motivoAnulacion).toContain('se movió');
+
+    // Una segunda anulación es un error del cliente.
+    const repetida = await post(
+      ctx,
+      `/api/v1/pesajes/${pesaje.body.id}/anular`,
+      { motivo: 'Otra vez el mismo pesaje' },
+      token,
+    );
+    expect(repetida.status).toBe(409);
+  });
+
+  it('exige motivo para anular', async () => {
+    const respuesta = await post(ctx, `/api/v1/pesajes/${'00000000-0000-0000-0000-000000000000'}/anular`, { motivo: 'no' }, token);
+    expect(respuesta.status).toBe(400);
+  });
+
   it('registra los pesajes en la auditoría con su origen', async () => {
     const auditoria = await get(ctx, '/api/v1/auditoria?limit=40', token);
     const acciones = auditoria.body.items.map((i: { action: string }) => i.action);
     expect(acciones).toContain('pesajes.crear');
     expect(acciones).toContain('pesajes.crear.duplicado');
     expect(acciones).toContain('basculas.crear');
+    expect(acciones).toContain('pesajes.anular');
   });
 });

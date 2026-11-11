@@ -416,8 +416,24 @@ model Pesaje {
   bascula    Bascula? @relation(fields: [basculaId], references: [id], onDelete: Restrict)
   bridge     Bridge?  @relation(fields: [bridgeId], references: [id], onDelete: Restrict)
 
+  anulacion  PesajeAnulacion?
+
   @@index([animalId], map: "ix_pesaje_animal_fecha")
   @@index([fincaId], map: "ix_pesaje_finca_fecha")
   @@map("pesaje")
+  @@schema("app")
+}
+
+
+model PesajeAnulacion {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pesajeId   String   @unique @map("pesaje_id") @db.Uuid
+  motivo     String
+  actorId    String?  @map("actor_id") @db.Uuid
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  pesaje Pesaje @relation(fields: [pesajeId], references: [id], onDelete: Restrict)
+
+  @@map("pesaje_anulacion")
   @@schema("app")
 }

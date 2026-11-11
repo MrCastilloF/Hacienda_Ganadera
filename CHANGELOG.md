@@ -4,6 +4,19 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.3.3] — 2026-11-11
+
+### Agregado
+- **Anulación de pesajes** con evento compensatorio: el pesaje no se borra ni se modifica, se anula con motivo
+  (mínimo 5 caracteres), queda auditado con su responsable y aparece marcado en el historial. Una segunda
+  anulación devuelve 409. Antes, un peso mal tomado era incorregible por diseño.
+- **Accesos directos** en el panel a Animales, Pesaje y Auditoría (antes solo se llegaba escribiendo la URL).
+
+### Corregido
+- **Contrato OpenAPI desactualizado**: publicado con 36 rutas (arrastraba 29 desde la Fase 1).
+- La limpieza de las pruebas fallaba al borrar pesajes anulados (la anulación referencia al pesaje con
+  `ON DELETE RESTRICT`).
+
 ## [0.3.2] — 2026-11-11
 
 ### Corregido

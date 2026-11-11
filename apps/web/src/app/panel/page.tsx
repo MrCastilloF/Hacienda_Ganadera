@@ -27,6 +27,27 @@ export default async function PanelPage() {
 
   return (
     <main id="contenido" className="mx-auto max-w-6xl px-6 py-8">
+      <nav className="mb-6 flex flex-wrap gap-3 text-sm" aria-label="Accesos directos">
+        <Link
+          href="/animales"
+          className="rounded-lg bg-campo-900 px-4 py-2 font-semibold text-white hover:bg-campo-800"
+        >
+          Animales
+        </Link>
+        <Link
+          href="/pesaje"
+          className="rounded-lg bg-campo-900 px-4 py-2 font-semibold text-white hover:bg-campo-800"
+        >
+          Pesaje
+        </Link>
+        <Link
+          href="/auditoria"
+          className="rounded-lg border border-campo-500/40 px-4 py-2 font-semibold text-campo-900 hover:bg-campo-100"
+        >
+          Auditoría
+        </Link>
+      </nav>
+
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-campo-700">

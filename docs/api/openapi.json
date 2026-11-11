@@ -670,6 +670,198 @@
           "catálogos"
         ]
       }
+    },
+    "/api/v1/pesajes": {
+      "get": {
+        "operationId": "pesajes_listar",
+        "parameters": [
+          {
+            "name": "animalId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista pesajes con filtros por animal, finca y fechas",
+        "tags": [
+          "pesajes"
+        ]
+      },
+      "post": {
+        "description": "Enviar el mismo `idempotencyKey` devuelve el pesaje existente en lugar de crear otro. Un segundo pesaje del mismo animal en la misma báscula dentro de 60 s se marca como duplicado.",
+        "operationId": "pesajes_crear",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra un pesaje (inmutable, idempotente y deduplicado)",
+        "tags": [
+          "pesajes"
+        ]
+      }
+    },
+    "/api/v1/pesajes/animal/{id}": {
+      "get": {
+        "operationId": "pesajes_porAnimal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Historial de pesajes de un animal",
+        "tags": [
+          "pesajes"
+        ]
+      }
+    },
+    "/api/v1/pesajes/{id}/anular": {
+      "post": {
+        "description": "El pesaje no se borra ni se modifica: se anula con un motivo de al menos 5 caracteres y queda auditado. Una segunda anulación del mismo pesaje devuelve 409.",
+        "operationId": "pesajes_anular",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Anula un pesaje con motivo (evento compensatorio)",
+        "tags": [
+          "pesajes"
+        ]
+      }
+    },
+    "/api/v1/pesajes/simulado": {
+      "post": {
+        "description": "Ejecuta la misma cadena que un pesaje real con tramas generadas. El resultado queda marcado como SIMULATOR y la API lo advierte en el campo `aviso`.",
+        "operationId": "pesajes_simular",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pesaje simulado: adaptador → estabilidad → registro, con origen SIMULATOR",
+        "tags": [
+          "pesajes"
+        ]
+      }
+    },
+    "/api/v1/basculas/adaptadores": {
+      "get": {
+        "operationId": "basculas_adaptadores",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Protocolos con adaptador registrado (sin adaptador, no hay soporte)",
+        "tags": [
+          "básculas"
+        ]
+      }
+    },
+    "/api/v1/basculas": {
+      "get": {
+        "operationId": "basculas_listar",
+        "parameters": [
+          {
+            "name": "fincaId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "básculas"
+        ]
+      },
+      "post": {
+        "operationId": "basculas_crear",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra una báscula y sus umbrales de estabilidad",
+        "tags": [
+          "básculas"
+        ]
+      }
+    },
+    "/api/v1/basculas/{id}": {
+      "patch": {
+        "operationId": "basculas_actualizar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualiza configuración, umbrales o estado de integración",
+        "tags": [
+          "básculas"
+        ]
+      }
     }
   },
   "info": {

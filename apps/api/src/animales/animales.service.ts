@@ -442,6 +442,24 @@ export class AnimalesService {
         : AppError.conflict(resultado.mensaje);
     }
 
+    // RF-SAL-06: no se vende ni se sacrifica un animal con retiro vigente. Es un
+    // bloqueo del dominio, no una advertencia de la interfaz.
+    if (hacia === 'vendido' || hacia === 'sacrificado') {
+      const retiro = await this.prisma.tratamiento.findMany({
+        where: { animalId: id, finRetiro: { gt: new Date() }, anulacion: null },
+        orderBy: { finRetiro: 'desc' },
+        select: { medicamento: true, finRetiro: true },
+      });
+
+      if (retiro.length > 0) {
+        const ultimo = retiro[0]!;
+        const dias = Math.ceil((ultimo.finRetiro.getTime() - Date.now()) / 86_400_000);
+        throw AppError.conflict(
+          `No se puede pasar a "${hacia}": retiro vigente del medicamento "${ultimo.medicamento}" por ${dias} día(s), hasta ${ultimo.finRetiro.toISOString().slice(0, 10)}`,
+        );
+      }
+    }
+
     return this.prisma.$transaction(async (tx) => {
       const actualizado = await tx.animal.update({
         where: { id },

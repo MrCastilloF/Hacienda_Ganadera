@@ -69,6 +69,7 @@ const MATRIZ = {
       alimentacion: ['consultar'],
       documentos: ['consultar', 'crear'],
       reportes: ['consultar', 'exportar'],
+  salud: ['consultar', 'crear', 'modificar'],
       mapas: ['consultar'],
     },
   },

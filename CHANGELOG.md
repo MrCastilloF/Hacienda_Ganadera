@@ -4,6 +4,24 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.5.0] — 2026-11-11 · Fase 5 (primer corte)
+
+### Agregado
+- **Tratamientos veterinarios** inmutables: medicamento, principio activo, dosis, vía, diagnóstico, días de
+  tratamiento y días de retiro, con idempotencia y anulación por evento compensatorio.
+- **Periodo de retiro calculado al registrar** (desde el último día de tratamiento) y guardado: si mañana
+  cambia la regla, lo ya registrado no se reescribe.
+- **Bloqueo de venta y sacrificio** mientras el retiro esté vigente. No es una advertencia de interfaz: es un
+  rechazo del dominio con el medicamento, los días restantes y la fecha exacta. Las demás transiciones
+  (cuarentena, enfermo, recuperación) siguen permitidas.
+- **Listado de tratamientos** con estado de retiro y filtro de vigentes.
+- 7 pruebas unitarias del cálculo de retiro.
+
+### Decisiones
+- Los días restantes se redondean **hacia arriba**: es preferible bloquear un día de más que autorizar una
+  venta anticipada.
+- El fin de tratamiento es un **instante**, no la medianoche del día: evita autorizar una venta unas horas antes.
+
 ## [0.4.1] — 2026-11-11
 
 ### Agregado

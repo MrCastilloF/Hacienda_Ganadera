@@ -169,7 +169,7 @@ Detalle en [`ROADMAP.md`](ROADMAP.md).
 | **F2** | Animales, identificación, genealogía e importación del hato | ✅ entregada |
 | **F3** | Báscula, protocolos y pantalla de pesaje | ⏳ en curso (sin hardware) |
 | **F4** | Pesajes, crecimiento y reportes | ⏳ en curso |
-| **F5** | Veterinaria y salud | pendiente |
+| **F5** | Veterinaria y salud | ⏳ en curso |
 | **F6** | Reproducción, nacimientos y genética | pendiente |
 | **F7** | Alimentación, potreros y movimientos | pendiente |
 | **F8** | Compras, ventas y finanzas | pendiente |

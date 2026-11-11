@@ -88,7 +88,7 @@ Curva de crecimiento, GDP, comparaciones, alertas de variación, deduplicación,
 
 ---
 
-## F5 · Veterinaria y salud
+## F5 · Veterinaria y salud ⏳ en curso
 
 Historia clínica, vacunación con próxima dosis, tratamientos con periodo de retiro, exámenes, cuarentena,
 alertas sanitarias.

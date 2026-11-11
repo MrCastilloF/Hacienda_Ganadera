@@ -47,6 +47,7 @@ model Finca {
   basculas Bascula[]
   bridges  Bridge[]
   pesajes  Pesaje[]
+  tratamientos Tratamiento[]
 
   @@map("finca")
   @@schema("app")
@@ -296,6 +297,7 @@ model Animal {
   identificaciones AnimalIdentificacion[]
   estados         AnimalEstadoHistorial[]
   pesajes         Pesaje[]
+  tratamientos    Tratamiento[]
 
   @@unique([fincaId, arete], map: "uq_animal_finca_arete")
   @@unique([codigoBarras], map: "uq_animal_codigo_barras")
@@ -435,5 +437,50 @@ model PesajeAnulacion {
   pesaje Pesaje @relation(fields: [pesajeId], references: [id], onDelete: Restrict)
 
   @@map("pesaje_anulacion")
+  @@schema("app")
+}
+
+
+model Tratamiento {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fincaId          String    @map("finca_id") @db.Uuid
+  animalId         String    @map("animal_id") @db.Uuid
+  medicamento      String
+  principioActivo  String?   @map("principio_activo")
+  dosis            String?
+  via              String?
+  diagnostico      String?
+  motivo           String?
+  iniciadoAt       DateTime  @map("iniciado_at") @db.Timestamptz(6)
+  diasTratamiento  Int       @default(1) @map("dias_tratamiento")
+  diasRetiro       Int       @default(0) @map("dias_retiro")
+  finTratamiento   DateTime  @map("fin_tratamiento") @db.Timestamptz(6)
+  finRetiro        DateTime  @map("fin_retiro") @db.Timestamptz(6)
+  veterinario      String?
+  observaciones    String?
+  origen           String    @default("FIELD")
+  registradoPor    String?   @map("registrado_por") @db.Uuid
+  idempotencyKey   String    @unique @map("idempotency_key") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  finca     Finca                @relation(fields: [fincaId], references: [id], onDelete: Restrict)
+  animal    Animal               @relation(fields: [animalId], references: [id], onDelete: Restrict)
+  anulacion TratamientoAnulacion?
+
+  @@index([animalId], map: "ix_tratamiento_animal")
+  @@map("tratamiento")
+  @@schema("app")
+}
+
+model TratamientoAnulacion {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tratamientoId String   @unique @map("tratamiento_id") @db.Uuid
+  motivo        String
+  actorId       String?  @map("actor_id") @db.Uuid
+  occurredAt    DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  tratamiento Tratamiento @relation(fields: [tratamientoId], references: [id], onDelete: Restrict)
+
+  @@map("tratamiento_anulacion")
   @@schema("app")
 }

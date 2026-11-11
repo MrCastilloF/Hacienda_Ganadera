@@ -21,3 +21,9 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
+# Correcciones de seguridad forzadas en dependencias transitivas.
+# Cualquier override aquí debe justificarse y revisarse al actualizar Next/Prisma.
+overrides:
+  # GHSA-r28c-9q8g-f849 y la variante de path traversal: parche en 8.5.18
+  postcss@<8.5.18: ^8.5.18

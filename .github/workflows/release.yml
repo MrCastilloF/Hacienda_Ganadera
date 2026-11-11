@@ -30,7 +30,7 @@ jobs:
     outputs:
       has_app: ${{ steps.detect.outputs.present }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -71,7 +71,7 @@ jobs:
           - service: web
             dockerfile: apps/web/Dockerfile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Detectar Dockerfile
         id: detect
@@ -124,7 +124,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

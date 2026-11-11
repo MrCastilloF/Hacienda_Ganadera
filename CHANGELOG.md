@@ -4,6 +4,14 @@ Todos los cambios notables de este proyecto se documentan aquí.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 [SemVer](https://semver.org/lang/es/).
 
+## [0.4.1] — 2026-11-11
+
+### Agregado
+- **Interfaz de crecimiento** (`/reportes`): tarjetas de resumen del hato, tabla con GDP por animal, rango
+  esperado y clasificación con color, filtro «solo crecimiento bajo» y acceso desde el panel.
+- **Curva de peso por animal** dibujada en SVG puro (sin dependencias, sin JavaScript): puntos de pesaje,
+  tramos con ganancia y días, y estimación a 30 días con su advertencia visible.
+
 ## [0.4.0] — 2026-11-11 · Fase 4 (núcleo)
 
 ### Agregado

@@ -41,6 +41,12 @@ export default async function PanelPage() {
           Pesaje
         </Link>
         <Link
+          href="/reportes"
+          className="rounded-lg bg-campo-900 px-4 py-2 font-semibold text-white hover:bg-campo-800"
+        >
+          Crecimiento
+        </Link>
+        <Link
           href="/auditoria"
           className="rounded-lg border border-campo-500/40 px-4 py-2 font-semibold text-campo-900 hover:bg-campo-100"
         >
